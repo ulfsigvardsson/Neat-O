@@ -1,5 +1,7 @@
 # Gulhamplingarna
 
+Lite nyttiga länkar:
+
 #### Länk till gruppens [Trello board](https://trello.com/b/k1aCpNMh/projektarbete-ioopm).
 
 #### [Övergripande](http://wrigstad.com/ioopm/2017/project.html) specifikation för projekten.

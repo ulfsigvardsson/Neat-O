@@ -1,5 +1,20 @@
 # Gulhamplingarna
 
+##Struktur på repot
+.
+├── demo/
+├── doc/
+│   └── design.md
+├── makefile # top-level makefile
+├── proj/
+│   ├── code_quality_report.md
+│   ├── deviations.md
+│   ├── individual_reflection.md
+│   ├── team_reflection.md
+│   └── test_report.md
+├── src/
+└── test/
+
 Lite nyttiga länkar:
 
 #### Länk till gruppens [Trello board](https://trello.com/b/k1aCpNMh/projektarbete-ioopm).

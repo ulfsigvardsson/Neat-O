@@ -1,0 +1,23 @@
+
+foo.c,110
+typedef struct foo{foo4,40
+  char *name;name5,60
+} foo_t;6,74
+void foo_destructor(8,84
+int main(13,127
+
+refmem.c,387
+static size_t cascade_limit 6,80
+struct ref14,364
+  obj object;16,377
+  size_t ref_count;17,469
+  function1_t *destructor;destructor18,561
+void retain(26,781
+void release(42,1113
+size_t rc(60,1456
+void no_destructor(75,1706
+function1_t get_destructor(85,1881
+obj allocate(105,2617
+void deallocate(127,3368
+void set_cascade_limit(141,3679
+size_t get_cascade_limit(152,3848

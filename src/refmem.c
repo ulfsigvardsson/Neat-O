@@ -3,19 +3,21 @@
 #include <assert.h>
 #include <stdio.h>
 
+#define OBJECT_TO_RECORD(object) ((struct object_record*)(object) - 1)
+#define RECORD_TO_OBJECT(record) ((obj)(record + 1))
+
 static size_t cascade_limit = 1000;  /*!< The cascade limit with a default value. */
 
 /**
- * \struct ref
- * The ref struct contains a data object along with meta data of the
- * current amount of references to said object along with a function pointer
+ * \struct object_record
+ * The object_record struct contains meta data consisting of the
+ * current amount of references to a heap object along with a function pointer
  * to a destructor function.
  */
-struct ref
+struct object_record
 {
-  obj object;             /*!< The actual data object allocated by the client */ // 8 bytes
-  size_t ref_count;       /*!< Reference count for the object member */          // 8 bytes
-  function1_t destructor; /*!< Pointer to a destructor function */               // 8 bytes
+  size_t ref_count;    /*!< Reference count for the object member */    // 8 bytes
+  function1_t destroy; /*!< Pointer to a destructor function */         // 8 bytes
 };
 
 /**
@@ -27,14 +29,13 @@ void retain(obj o)
 {
   if(o)
     {
-      char *p = (char*) o;
-      p = p + sizeof(obj);
-      (*p)++;
+      struct object_record *record = OBJECT_TO_RECORD(o);
+      record->ref_count++;
     }
 };
 
 /**
- * Decrements an objects referene count by one. If this results in
+ * Decrements an objects reference count by one. If this results in
  * the reference count hitting 0 the associated object will be deallocated.
  *
  * \param o The object for wich to decrement the reference count
@@ -43,11 +44,9 @@ void release(obj o)
 {
   if (o)
     {
-      char *p = (char*) o;
-      p = p + sizeof(obj);
-      (*p)--;
-      
-      if (*p == 0) deallocate(o); 
+      struct object_record *record = OBJECT_TO_RECORD(o);
+      record->ref_count--;
+      if (record->ref_count == 0) deallocate(o); 
     }
 };
 
@@ -60,35 +59,21 @@ void release(obj o)
 size_t rc(obj o)
 {
   assert(o);
-  
-  char *p = (char*) o;
-  p = p + sizeof(obj);
-  return *p;
+  struct object_record *record = OBJECT_TO_RECORD(o);
+  return record->ref_count;  
 };
 
 /**
  * Default destructor function for use when allocate is called with NULL
  * as its destructor argument.
  *
- * \param o Data object to be freed.
+ * \param o Data object to (not) be freed.
  */
 void no_destructor(obj o)
 {
   return;
 };
 
-/**
- * Retrieves the destructor function associated with an object.
- *
- * \param o The object for wich to retrieve the function.
- */
-function1_t get_destructor(obj o)
-{
-  assert(o);
-  
-  char *p = (char*) o;
-  return (function1_t) p + sizeof(obj)+sizeof(size_t);
-}
 
 /**
  * Allocates an object on the heap together with additional meta data
@@ -104,12 +89,10 @@ function1_t get_destructor(obj o)
  */
 obj allocate(size_t bytes, function1_t destructor)
 {
-  ref_t *result      = calloc(1, sizeof(ref_t));
-  result->object     = calloc(1, bytes);
-  result->ref_count  = 0; 
-  result->destructor = destructor ? destructor : no_destructor;
-  
-  return result->object;
+  struct object_record *record = malloc(bytes + sizeof(record));
+  record->ref_count = 0;
+  record->destroy = destructor ? destructor : no_destructor;
+  return RECORD_TO_OBJECT(record);
 };
 
 
@@ -121,14 +104,15 @@ obj *allocate_array(size_t elements, size_t elem_size, function1_t destructor);
  * \param o The object to deallocate
  * \warning Passing NULL to the function causes an error, so does an object with a non-zero reference count.
  //FIXME: Causes SIGSEGV 
-*/
+ */
 void deallocate(obj o)
 {
-  assert(rc(o) == 0);
-  function1_t destructor = get_destructor(o);
-  destructor(o);
+  assert(o);
+  struct object_record *record = OBJECT_TO_RECORD(o);
+  assert(record->ref_count == 0); 
+  record->destroy(o);
+  free(record);
 };
-
 /**
  * Modifies the cascade limit
  *
@@ -152,5 +136,3 @@ size_t get_cascade_limit()
 
 void cleanup();
 void shutdown();
-
-// varje cell har en cellpekare, varje struct ref innehåller en funktionspekare för att förstöre den struct_refen

@@ -1,7 +1,8 @@
 #pragma once
+
 #include <stddef.h>
 
-typedef struct ref ref_t;
+
 typedef void *obj;
 typedef void(*function1_t)(obj);
 

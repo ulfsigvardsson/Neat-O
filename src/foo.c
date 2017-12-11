@@ -10,31 +10,24 @@ typedef struct foo{
 void foo_destructor(obj o)
 {
   foo_t *foo = (foo_t*)o;
-  free(foo->name);
+  release(foo->name); 
 }
 
-foo_t *bajs()
+foo_t *new_foo(char* id)
 {
   foo_t *foo = allocate(sizeof(foo_t), foo_destructor);
+  foo->name = strdup2(id); 
+  retain(foo);
   return foo;
 }
 
 int main(int argc, char *argv[])
 {
-  foo_t *foo = bajs();
-  foo->name =strdup("Foo"); 
-  printf("%zd\n", rc(foo)); 
-  retain(foo);
-  printf("%zd\n", rc(foo)); 
-  retain(foo);
-  printf("%zd\n", rc(foo)); 
+  foo_t *foo = new_foo("Foo");
+  printf("Adress of foo: %p\n", foo);
+  printf("Adress of foo->name: %p\n", &foo->name);
   release(foo);
-  printf("%zd\n", rc(foo)); 
-  printf("Cascade limit: %zd\n", get_cascade_limit());
-  set_cascade_limit(2000);
-  printf("Cascade limit: %zd\n", get_cascade_limit());
-  printf("Deallokerar foo...\n");
-  release(foo);
+
   return 0;
 }
 

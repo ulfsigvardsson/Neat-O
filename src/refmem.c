@@ -18,11 +18,11 @@ static size_t cascade_limit = 1000;  /*!< The cascade limit with a default value
  * current amount of references to a heap object along with a function pointer
  * to a destructor function.
  */
-struct object_record
+typedef struct object_record
 {
   size_t ref_count;    /*!< Reference count for the object member */    // 8 bytes
   function1_t destroy; /*!< Pointer to a destructor function */         // 8 bytes
-};
+}object_record_t;
 
 /**
  * Increments an objects referene count by one
@@ -103,6 +103,12 @@ obj allocate(size_t bytes, function1_t destructor)
   return RECORD_TO_OBJECT(record);
 };
 
+/**
+ * Own implementation of 'strdup'. Allocates space for a string and stores a string there.
+ *
+ * \param string The string to allocate
+ * \return char* Pointer to the allocated string
+ */
 char *strdup2(char *c)
 {
   char *result = allocate(sizeof(char*), NULL);

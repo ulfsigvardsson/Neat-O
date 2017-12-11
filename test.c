@@ -19,6 +19,7 @@ int clean_suite(void)
 // Manual Active Reference Collector (MARC)
 
 
+
 /**
  * Test for the retain function
  */
@@ -66,13 +67,27 @@ void deallocate_test(void)
  */
 void set_cascade_limit_test(void)
 {
+  int different_sizes[] = {-999999999, -1, 0, 1, 999999999 }; /* !< The smallest and largest numbers allowed before an overflow */
+  static size_t cascade_limit = 0;
+  for(int i = 0; i < 5; i++)
+    {
+      set_cascade_limit(different_sizes[i]);
+      CU_ASSERT_TRUE(cascade_limit == different_sizes[i]);
+    }
 }
 
 /**
  * Test for the get_cascade_limit function
  */
 void get_cascade_limit_test(void)
-{
+{ 
+  int different_sizes[] = {-999999999, -1, 0, 1, 999999999 }; /* !< The smallest and largest numbers allowed before an overflow */
+  static size_t cascade_limit = 0;
+  for(int i = 0; i < 5; i++)
+    {
+      set_cascade_limit(different_sizes[i]);
+      size_t tmp_cascade_limit = get_cascade_limit();
+      CU_ASSERT_TRUE(tmp_cascade_limit == different_sizes[i]);
 }
 
 /**

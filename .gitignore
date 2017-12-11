@@ -38,7 +38,7 @@
 
 # Temp files
 *~
-#*#
+#*
 
 # Debug files
 *.dSYM/

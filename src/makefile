@@ -1,5 +1,5 @@
 test: foo.c refmem.h refmem.c
-	gcc -g -Wall foo.c refmem.c -o foo
+	gcc -g -Werror foo.c refmem.c -o foo
 
 clean:
 	rm foo

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 SRCDIR = src
 OBJDIR = src/obj
 CFLAGS = -ggdb -Werror

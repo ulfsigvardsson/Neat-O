@@ -1,7 +1,23 @@
-test: foo.c refmem.h refmem.c
-	gcc -g -Wall foo.c refmem.c -o foo
+SRCDIR = src
+OBJDIR = src/obj
+CFLAGS = -ggdb -Werror
+CC = gcc
+RM = rm -f
+
+run: main
+	./main
+
+main: main.o refmem.o
+	$(CC) $(CFLAGS) $? -o $@
+
+main.o: refmem.h
+
+refmem.o: refmem.h
 
 clean:
-	rm foo
-	rm .*~
-	rm .*#
+	$(RM) main
+	$(RM) *.o
+	$(RM) *.*~
+	$(RM) *.*#
+
+.PHONY: clean

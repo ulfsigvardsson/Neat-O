@@ -13,7 +13,7 @@ void foo_destructor(obj o)
   release(foo->name); 
 }
 
-foo_t *new_foo(char* id)
+foo_t *new_foo(char *id)
 {
   foo_t *foo = allocate(sizeof(foo_t), foo_destructor);
   foo->name = strdup2(id); 
@@ -24,9 +24,15 @@ foo_t *new_foo(char* id)
 int main(int argc, char *argv[])
 {
   foo_t *foo = new_foo("Foo");
-  printf("Adress of foo: %p\n", foo);
-  printf("Adress of foo->name: %p\n", &foo->name);
+  retain(foo);
+  printf("Namn på foo: %s\n", foo->name);
+  retain(foo);
   release(foo);
+  release(foo);
+  release(foo);
+  char *test = strdup2("test");
+  printf("Namn på test: %s\n", test);
+  release(test);
 
   return 0;
 }

@@ -1,23 +1,25 @@
 
-foo.c,110
-typedef struct foo{foo4,40
-  char *name;name5,60
-} foo_t;6,74
-void foo_destructor(8,84
-int main(13,127
+foo.c,145
+typedef struct foo{foo6,80
+  char *name;name7,100
+} foo_t;8,114
+void foo_destructor(10,124
+foo_t *new_foo(new_foo16,205
+int main(24,348
 
-refmem.c,387
-static size_t cascade_limit 6,80
-struct ref14,364
-  obj object;16,377
-  size_t ref_count;17,469
-  function1_t *destructor;destructor18,561
-void retain(26,781
-void release(42,1113
-size_t rc(60,1456
-void no_destructor(75,1706
-function1_t get_destructor(85,1881
-obj allocate(105,2617
-void deallocate(127,3368
-void set_cascade_limit(141,3679
-size_t get_cascade_limit(152,3848
+refmem.c,424
+#define OBJECT_TO_RECORD(8,259
+#define RECORD_TO_OBJECT(11,511
+static size_t cascade_limit 13,565
+struct object_record21,857
+  size_t ref_count;23,880
+  function1_t destroy;24,963
+void retain(32,1173
+void release(47,1538
+size_t rc(63,1926
+void no_destructor(76,2213
+obj allocate(93,2712
+char *strdup2(strdup2106,3240
+void deallocate(122,3692
+void set_cascade_limit(140,4110
+size_t get_cascade_limit(150,4273

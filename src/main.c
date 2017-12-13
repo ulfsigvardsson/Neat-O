@@ -7,6 +7,15 @@ typedef struct foo{
   char *name;
 } foo_t;
 
+void list_destructor(obj o)
+{
+  if (get_cascade_limit() > 0)
+    {
+      //free next
+    }
+  
+}
+
 void foo_destructor(obj o)
 {
   foo_t *foo = (foo_t*)o;
@@ -21,7 +30,7 @@ foo_t *new_foo(char *id)
   return foo;
 }
 
-int main(int argc, char *argv[])
+void test_foo()
 {
   foo_t *foo = new_foo("Foo");
   retain(foo);
@@ -33,7 +42,21 @@ int main(int argc, char *argv[])
   char *test = strdup2("test");
   printf("Namn på test: %s\n", test);
   release(test);
+}
 
+void test_array()
+{
+  char *array = allocate_array(2, sizeof(char), NULL); 
+  retain(array);
+  array[0] = 'a';
+  printf("%d\n", array[0]);
+  release(array);
+}
+
+int main(int argc, char *argv[])
+{
+  test_foo();
+  test_array();
   return 0;
 }
 

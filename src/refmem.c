@@ -132,10 +132,12 @@ obj allocate_array(size_t elements, size_t elem_size, function1_t destructor)
 {
   size_t total = elements * elem_size;
   obj object   = allocate(total, destructor);
+  object_record_t *record = OBJECT_TO_RECORD(object); 
   
   if(!object)
     return NULL;
 
+  record->arr_len = elements;
   return memset(object, 0, total); // Detta nollar alla bytes, från 'object' och 'total' bytes framåt
 }
 

@@ -1,25 +1,62 @@
 
-foo.c,145
+hashmap.c,734
+#define INITIAL_SIZE 10,120
+#define MAX_CHAIN_LENGTH 11,147
+typedef struct _hashmap_element{_hashmap_element14,215
+  char* key;15,248
+  int in_use;16,261
+  any_t data;17,275
+} hashmap_element;18,289
+typedef struct _hashmap_map{_hashmap_map22,397
+  int table_size;23,426
+  int size;24,444
+  hashmap_element *data;data25,456
+} hashmap_map;26,481
+map_t hashmap_new(31,552
+static unsigned long crc32_tab[crc32_tab92,4075
+unsigned long crc32(149,7605
+unsigned int hashmap_hash_int(167,7918
+int hashmap_hash(191,8485
+int hashmap_rehash(221,9112
+int hashmap_put(261,9894
+int hashmap_get(289,10440
+int hashmap_iterate(325,11205
+int hashmap_remove(351,11748
+void hashmap_free(386,12463
+int hashmap_length(393,12600
+
+main.c,220
 typedef struct foo{foo6,80
   char *name;name7,100
-} foo_t;8,114
-void foo_destructor(10,124
-foo_t *new_foo(new_foo16,205
-int main(24,348
+} foo_t;8,124
+void list_destructor(10,134
+void foo_destructor(19,231
+foo_t *new_foo(new_foo25,312
+void test_foo(33,456
+void test_array(39,524
+int main(47,656
 
-refmem.c,424
-#define OBJECT_TO_RECORD(8,259
-#define RECORD_TO_OBJECT(11,511
-static size_t cascade_limit 13,565
-struct object_record21,857
-  size_t ref_count;23,880
-  function1_t destroy;24,963
-void retain(32,1173
-void release(47,1538
-size_t rc(63,1926
-void no_destructor(76,2213
-obj allocate(93,2712
-char *strdup2(strdup2106,3240
-void deallocate(122,3692
-void set_cascade_limit(140,4110
-size_t get_cascade_limit(150,4273
+refmem.c,719
+#define OBJECT_TO_RECORD(10,302
+#define RECORD_TO_OBJECT(14,552
+#define CASCADE_LIMIT 15,605
+typedef struct object_record object_record_t;17,633
+static size_t cascade_limit 19,680
+static object_record_t *heap_allocations heap_allocations20,774
+struct object_record28,1085
+  size_t ref_count;30,1108
+  function1_t destroy;31,1191
+  object_record_t *next;next32,1274
+  size_t arr_len;33,1357
+void retain(43,1749
+void release(58,2116
+size_t rc(77,2550
+void no_destructor(91,2966
+obj allocate(108,3459
+obj allocate_array(135,4457
+char *strdup2(strdup2154,5037
+void deallocate(177,5527
+void set_cascade_limit(193,5944
+size_t get_cascade_limit(203,6106
+void cleanup(211,6245
+ void shutdown(228,6572

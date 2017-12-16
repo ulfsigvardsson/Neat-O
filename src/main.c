@@ -19,7 +19,7 @@ void list_destructor(obj o)
 void foo_destructor(obj o)
 {
   foo_t *foo = (foo_t*)o;
-  release(foo->name); 
+    release(foo->name); 
 }
 
 foo_t *new_foo(char *name)
@@ -33,7 +33,7 @@ foo_t *new_foo(char *name)
 void test_foo(char *name)
 {
   foo_t *foo = new_foo(name);
-  release(foo);
+  //release(foo);
 }
 
 void test_array()
@@ -46,10 +46,10 @@ void test_array()
 
 int main(int argc, char *argv[])
 {
-  char *test =strdup2("test");  
+  char *test2 = strdup2("bajs");
+  char *test =strdup2("test"); 
   test_foo("Foo");
-  test_array(); 
-  release(test);
+  char *hej = strdup2("hejsan!");
   shutdown();
   return 0;
 }

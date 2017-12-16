@@ -38,7 +38,7 @@ struct object_record
 };
 
 /**
- * Increments an objects referene count by one
+ * Increments an objects reference count by one
  *
  * \param o The object for wich to increment the reference count
  */
@@ -185,6 +185,7 @@ char *strdup2(char *org)
 void deallocate(obj object)
 {
   assert(object); 
+  assert(rc(object)==0);
   //Säkerställ att det är ett heapobjekt
   object_record_t *record = OBJECT_TO_RECORD(object);
 

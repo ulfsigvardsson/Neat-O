@@ -187,106 +187,106 @@ char *strdup2(char *org)
  *
  * \param record The object record to be deallocated
  */
- void redirect_heap_pointers(object_record_t *record)
- {
-   object_record_t *previous = record->previous;
-   object_record_t *next     = record->next;
 
-   //If no other heap objects remain then the final pointer is set to NULL
-   if (IS_LAST_ALLOCATION(record))
-     last_allocation = NULL;
-  
-   if(previous)
-     previous->next = next;
-  
-   if(next)
-     next->previous = previous;
+void redirect_heap_pointers(object_record_t *record)
+{
+  object_record_t *previous = record->previous;
+  object_record_t *next     = record->next;
 
-   //Corner case: if this is the most recent allocation then last_allocation is stepped back one step in the list
-   if (last_allocation == record)
-     last_allocation = previous;
- }
+  //If no other heap objects remain then the final pointer is set to NULL
+  if (IS_LAST_ALLOCATION(record))
+    last_allocation = NULL;
+  
+  if(previous)
+    previous->next = next;
+  
+  if(next)
+    next->previous = previous;
+
+  //Corner case: if this is the most recent allocation then last_allocation is stepped back one step in the list
+  if (last_allocation == record)
+    last_allocation = previous;
+}
  
- /**
-  * Deallocates an object by passing it to its associated destructor function. 
-  *
-  * \param o The object to deallocate
-  * \param destroy True if called through the retain function, if so the object's destructor is called.
-  * \warning Passing NULL to the function causes an error, so does an object with a non-zero reference count. 
-  */
- void deallocate(obj object, bool destroy)
- {
-   assert(object); 
-   assert(rc(object)==0);
+/**
+ * Deallocates an object by passing it to its associated destructor function. 
+ *
+ * \param o The object to deallocate
+ * \param destroy True if called through the retain function, if so the object's destructor is called.
+ * \warning Passing NULL to the function causes an error, so does an object with a non-zero reference count. 
+ */
+void deallocate(obj object, bool destroy)
+{
+  assert(object); 
    
-   object_record_t *record   = OBJECT_TO_RECORD(object); 
-   redirect_heap_pointers(record);
+  object_record_t *record   = OBJECT_TO_RECORD(object); 
+  redirect_heap_pointers(record);
   
-   if (destroy)
-     record->destroy(object); //TODO: Kontrollera att vi inte överskrider cascade limit
+  if (destroy)
+    record->destroy(object); //TODO: Kontrollera att vi inte överskrider cascade limit
   
-   free(record);
+  free(record);
 
     
- }
+}
 
- /**
-  * Modifies the cascade limit
-  *
-  * \param s The new cascade limit 
-  */
- //TODO: Upper limit? -- tidsbaserad (räkna tid i bytes)
- void set_cascade_limit(size_t size)
- {
-   cascade_limit = abs(size);
- }
+/**
+ * Modifies the cascade limit
+ *
+ * \param s The new cascade limit 
+ */
+//TODO: Upper limit? -- tidsbaserad (räkna tid i bytes)
+void set_cascade_limit(size_t size)
+{
+  cascade_limit = abs(size);
+}
 
- /**
-  * Returns the current cascade limit
-  *
-  * \return size_t The current cascade limit
-  */
- size_t get_cascade_limit()
- {
-   return cascade_limit;
- }
+/**
+ * Returns the current cascade limit
+ *
+ * \return size_t The current cascade limit
+ */
+size_t get_cascade_limit()
+{
+  return cascade_limit;
+}
 
- /**
-  * Frees all object whos reference count is 0, regardless of cascade limit
-  */
- void cleanup()
- {
-   object_record_t *current = last_allocation;
-   object_record_t *next;
+/**
+ * Frees all object whos reference count is 0, regardless of cascade limit
+ */
+void cleanup()
+{
+  object_record_t *current = last_allocation;
+  object_record_t *next;
   
-   while (current)
-     {
-       next = current->next;
+  while (current)
+    {
+      next = current->next;
 
-       if (rc(current) == 0)
-         {
-           obj object = RECORD_TO_OBJECT(current);
-           release(object);        
-         }
+      if (rc(current) == 0)
+        {
+          obj object = RECORD_TO_OBJECT(current);
+          release(object);        
+        }
       
-       current = next;
-     }
- }
+      current = next;
+    }
+}
 
- /**
-  * Frees all remaining allocated heap objects regardless of reference count
-  */
- void shutdown()
- {
-   object_record_t *current = last_allocation;
-   object_record_t *previous;
+/**
+ * Frees all remaining allocated heap objects regardless of reference count
+ */
+void shutdown()
+{
+  object_record_t *current = last_allocation;
+  object_record_t *previous;
 
-   while (current)
-     {
-       previous = current->previous; 
-       obj object = RECORD_TO_OBJECT(current); 
-       deallocate(object, false);
-       current    = previous;
-     }
- }
+  while (current)
+    {
+      previous = current->previous; 
+      obj object = RECORD_TO_OBJECT(current); 
+      deallocate(object, false);
+      current    = previous;
+    }
+}
 

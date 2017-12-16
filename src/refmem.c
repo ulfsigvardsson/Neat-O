@@ -2,15 +2,23 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
 /// \def OBJECT_TO_RECORD(object)
-/// Given a pointer object, steps back in memory the size of the object_record struct in order to point at the meta data before the actual data.
-#define OBJECT_TO_RECORD(object) ((struct object_record*)(object) - 1)
-/// \def RECORD_TO_OBJECT(record)
-/// Given a pointer record, steps forward in memory the size of the object_record struct in order to point at the actual data after the meta data.
-#define RECORD_TO_OBJECT(record) ((obj)(record + 1))
+/// Given a pointer 'object', steps back in memory the size of the object_record struct in order to point at the meta data before the actual data.
+#define OBJECT_TO_RECORD(object) ((object_record_t*)(object) - 1)
 
-static size_t cascade_limit = 1000;  /*!< The cascade limit with a default value. */
+/// \def RECORD_TO_OBJECT(record)
+/// Given a pointer 'record', steps forward in memory the size of the object_record struct in order to point at the actual data after the meta data.
+#define RECORD_TO_OBJECT(record) ((obj)(record + 1))
+#define CASCADE_LIMIT 1000
+
+typedef struct object_record object_record_t;
+
+static char* checkstring = "SLASKTRATT";
+static size_t cascade_limit = CASCADE_LIMIT;  /*!< The cascade limit with a default value. */
+static object_record_t *heap_allocations = NULL; /*!< Pointer to the 'first' dangling garbage object */
 
 /**
  * \struct object_record
@@ -18,14 +26,19 @@ static size_t cascade_limit = 1000;  /*!< The cascade limit with a default value
  * current amount of references to a heap object along with a function pointer
  * to a destructor function.
  */
-typedef struct object_record
+struct object_record
 {
   size_t ref_count;    /*!< Reference count for the object member */    // 8 bytes
   function1_t destroy; /*!< Pointer to a destructor function */         // 8 bytes
-}object_record_t;
+  object_record_t *next; /*!< Pointer to next allocated object */       // 8 bytes
+  size_t arr_len;  /*!< Length of array, if an array. */                // 8 bytes
+  char *check;
+  // Totalt 32 bytes
+  //TODO: Implement ref_count, arr_len and if and object is an array or not, to a bitstring.
+};
 
 /**
- * Increments an objects referene count by one
+ * Increments an objects reference count by one
  *
  * \param o The object for wich to increment the reference count
  */
@@ -33,10 +46,10 @@ void retain(obj object)
 {
   if(object)
     {
-      struct object_record *record = OBJECT_TO_RECORD(object);
-      record->ref_count++;
+      object_record_t *record = OBJECT_TO_RECORD(object);
+      (record->ref_count)++;
     }
-};
+}
 
 /**
  * Decrements an objects reference count by one. If this results in
@@ -48,11 +61,19 @@ void release(obj object)
 {
   if (object)
     {
-      struct object_record *record = OBJECT_TO_RECORD(object);
-      record->ref_count--;
-      if (record->ref_count == 0) deallocate(object); 
+      object_record_t *record = OBJECT_TO_RECORD(object);
+      if (rc(object) == 0)
+        deallocate(object);
+
+      else
+        {
+          (record->ref_count)--;
+          if (rc(object) == 0)
+            deallocate(object);           
+        } 
+
     }
-};
+}
 
 /**
  * Returns the current reference count of an object
@@ -63,19 +84,20 @@ void release(obj object)
 size_t rc(obj object)
 {
   assert(object);
-  struct object_record *record = OBJECT_TO_RECORD(object);
+  object_record_t *record = OBJECT_TO_RECORD(object);
   return record->ref_count;  
 };
 
 /**
  * Default destructor function for use when allocate is called with NULL
- * as its destructor argument.
+ * as its destructor argument. This function is used for strings since they are simply
+ * an array of chars adjacent to the object record and need no explicit free.
  *
  * \param o Data object to be freed.
  */
 void no_destructor(obj object)
 {
-  free(object);
+  return;
 };
 
 
@@ -97,26 +119,62 @@ obj allocate(size_t bytes, function1_t destructor)
   //Om mängden ofreead data är mindre än 'bytes' måste vi dock freea tills vi har frigjorts
   // 'bytes' antal bytes eller tills det inte finns fler gamla objekt kvar.
   
-  struct object_record *record = calloc(1, sizeof(*record) + bytes); 
+  set_cascade_limit(CASCADE_LIMIT); //reset cascade limit to its original value.
+  object_record_t *record = malloc(sizeof(*record) + bytes);
+
   record->ref_count = 0;
-  record->destroy = destructor ? destructor : no_destructor;
+  record->destroy   = destructor ? destructor : no_destructor;
+  record->next      = heap_allocations;
+  record->check     = checkstring;
+  heap_allocations  = record;
+  
   return RECORD_TO_OBJECT(record);
-};
+}
+
+/**
+ * Allocates space for an array an initializes each byte to 0. Equivalent to 'calloc'.
+ *
+ * \param elements The number of elements in the array
+ * \param elem_size The size of each array element 
+ * \param destructor Function pointer to the destructor
+ *
+ * \return obj  Pointer to the first element of the array
+ */
+obj allocate_array(size_t elements, size_t elem_size, function1_t destructor)
+{
+  size_t total = elements * elem_size;
+  obj object   = allocate(total, destructor);
+  object_record_t *record = OBJECT_TO_RECORD(object); 
+  
+  if(!object)
+    return NULL;
+
+  record->arr_len = elements;
+  return memset(object, 0, total); // Detta nollar alla bytes, från 'object' och 'total' bytes framåt
+}
 
 /**
  * Own implementation of 'strdup'. Allocates space for a string and stores a string there.
  *
- * \param string The string to allocate
+ * \param org The string to allocate
  * \return char* Pointer to the allocated string
  */
-char *strdup2(char *c)
+char *strdup2(char *org)
 {
-  char *result = allocate(sizeof(char*), NULL);
-  retain(c);
+  char *result;
+  int org_size = strlen(org);
+  int buf_size = (org_size+1)*sizeof(char);
+
+  result = allocate(buf_size, NULL);
+
+  if (!result)
+    return NULL;
+  
+  strcpy(result, org);
+  retain(result);
+
   return result;
 }
-
-obj *allocate_array(size_t elements, size_t elem_size, function1_t destructor);
 
 /**
  * Deallocates an object by passing it to its associated destructor function. 
@@ -126,16 +184,19 @@ obj *allocate_array(size_t elements, size_t elem_size, function1_t destructor);
  */
 void deallocate(obj object)
 {
-  printf("Deallocating object...\n");
-  assert(object);
-  
-  struct object_record *record = OBJECT_TO_RECORD(object); 
-  assert(record->ref_count == 0); 
+  assert(object); 
+  assert(rc(object)==0);
+  //Säkerställ att det är ett heapobjekt
+  object_record_t *record = OBJECT_TO_RECORD(object);
 
-  record->destroy(object); //Kontrollera att vi inte överskrider cascade limit
-  free(record);
+  if (strcmp(record->check, checkstring) == 0)
+    {
+      record->destroy(object); //TODO: Kontrollera att vi inte överskrider cascade limit
+      record->check = NULL;
+      free(record);
+    }    
+}
 
-};
 /**
  * Modifies the cascade limit
  *
@@ -145,7 +206,7 @@ void deallocate(obj object)
 void set_cascade_limit(size_t size)
 {
   cascade_limit = abs(size);
-};
+}
 
 /**
  * Returns the current cascade limit
@@ -155,8 +216,45 @@ void set_cascade_limit(size_t size)
 size_t get_cascade_limit()
 {
   return cascade_limit;
-};
+}
 
-void cleanup();
-void shutdown();
+/**
+ * Frees all object whos reference count is 0, regardless of cascade limit
+ */
+void cleanup()
+{
+  object_record_t *current = heap_allocations;
+  object_record_t *next;
+  
+  while (current)
+    {
+      next = current->next;
+
+      if (rc(current) == 0)
+        {
+          obj object = RECORD_TO_OBJECT(current);
+          release(object);        
+        }
+      
+      current = next;
+    }
+}
+
+/**
+ * Frees all remaining allocated heap objects regardless of reference count
+ */
+ void shutdown()
+ {
+   object_record_t **current = &heap_allocations;
+   object_record_t *next;
+
+   while (*current)
+     {
+       next = (*current)->next; 
+       obj object = RECORD_TO_OBJECT(current); 
+       deallocate(object);
+       *current   = NULL;
+       current    = &next;
+     }
+}
 

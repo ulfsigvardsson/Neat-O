@@ -16,4 +16,4 @@ srcclean:
 	$(MAKE) clean -C $(SRCDIR) 
 
 valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all ./src/main
+	valgrind --leak-check=full ./src/main

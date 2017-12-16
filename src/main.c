@@ -26,14 +26,14 @@ foo_t *new_foo(char *name)
 {
   foo_t *foo = allocate(sizeof(foo_t), foo_destructor);
   foo->name = strdup2(name);
-  retain(foo);
+  //retain(foo);
   return foo;
 }
 
 void test_foo(char *name)
 {
   foo_t *foo = new_foo(name);
-  //release(foo);
+  //release(foo); 
 }
 
 void test_array()
@@ -48,9 +48,10 @@ int main(int argc, char *argv[])
 {
   char *test2 = strdup2("bajs");
   char *test =strdup2("test"); 
-  test_foo("Foo");
-  char *hej = strdup2("hejsan!");
-  shutdown();
-  return 0;
+  test_foo("Foo"); 
+   char *hej = strdup2("hejsan!");
+   //cleanup();
+   shutdown();
+   return 0;
 }
 

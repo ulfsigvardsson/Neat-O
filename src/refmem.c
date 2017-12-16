@@ -83,7 +83,7 @@ void release(obj object)
 size_t rc(obj object)
 {
   assert(object);
-  object_record_t *record = OBJECT_TO_RECORD(object);
+  object_record_t *record = OBJECT_TO_RECORD(object); 
   return record->ref_count;  
 };
 
@@ -257,19 +257,17 @@ size_t get_cascade_limit()
 void cleanup()
 {
   object_record_t *current = last_allocation;
-  object_record_t *next;
-  
+  object_record_t *previous;
+
   while (current)
     {
-      next = current->next;
-
-      if (rc(current) == 0)
-        {
-          obj object = RECORD_TO_OBJECT(current);
-          release(object);        
-        }
+      previous = current->previous;
+      obj object = RECORD_TO_OBJECT(current);
       
-      current = next;
+      if (rc(object) == 0) 
+        deallocate(object, true); 
+      
+      current = previous;
     }
 }
 

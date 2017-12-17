@@ -33,7 +33,8 @@ foo_t *new_foo(char *name)
 void test_foo(char *name)
 {
   foo_t *foo = new_foo(name);
-  release(foo); 
+  retain(foo);
+  //release(foo); 
 }
 
 void test_array()
@@ -44,12 +45,14 @@ void test_array()
   release(array);
 }
 
+
 int main(int argc, char *argv[])
 {
   char *test2 = strdup2("bajs");
-  char *test =strdup2("test"); 
+  char *test =strdup2("test");
+  retain(test);
   test_foo("Foo");
-  char *hej = strdup2("hejsan!");
+  char *hej = strdup2("hejsan!"); 
   cleanup();
   shutdown();
   return 0;

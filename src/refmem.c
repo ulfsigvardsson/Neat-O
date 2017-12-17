@@ -3,22 +3,62 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-//#include <stdbool.h>
 
-/// \def OBJECT_TO_RECORD(object)
-/// Given a pointer 'object', steps back in memory the size of the object_record struct in order to point at the meta data before the actual data.
+/* =================================
+ * -------------MACROS--------------
+ * =================================
+ */
+
+/** 
+ * \def OBJECT_TO_RECORD(object)
+ * Given a pointer 'object', steps back in memory the size of the object_record struct 
+ * in order to point at the meta data before the actual data.
+ */
 #define OBJECT_TO_RECORD(object) ((object_record_t*)(object) - 1)
 
-#define IS_LAST_ALLOCATION(record) (!(record->previous) && !(record->next))
-/// \def RECORD_TO_OBJECT(record)
-/// Given a pointer 'record', steps forward in memory the size of the object_record struct in order to point at the actual data after the meta data.
+/** 
+ * \def RECORD_TO_OBJECT(record)
+ * Given a pointer 'record', steps forward in memory the size of the object_record struct 
+ * in order to point at the actual data after the meta data.
+ */
 #define RECORD_TO_OBJECT(record) ((obj)(record + 1))
+
+/** 
+ * \def IS_ONLY_ALLOCATION(record)
+ * Given a pointer 'record', determines if it is the lone current heap allocation
+ * by looking at its adjacent heap objects.
+ */
+#define IS_ONLY_ALLOCATION(record) (!(record->previous) && !(record->next))
+
+/** 
+ * \def CASCADE_LIMIT
+ * Global constant for the default value of the cascade limit.
+ */
 #define CASCADE_LIMIT 1000
+
+/* =================================
+ * --------TYPE DEFINITIONS---------
+ * =================================
+ */
 
 typedef struct object_record object_record_t;
 
+/* =================================
+ * --------STATIC VARIABLES---------
+ * =================================
+ */
+
 static size_t cascade_limit = CASCADE_LIMIT;  /*!< The cascade limit with a default value. */
 static object_record_t *last_allocation = NULL; /*!< Pointer to the 'first' heap object */
+static bool outstanding_frees = false;
+
+
+/* =================================
+ * -------STRUCTS & PROTOTYPES------
+ * =================================
+ */
+
+bool is_heap_object(obj object);
 
 /**
  * \struct object_record
@@ -28,13 +68,22 @@ static object_record_t *last_allocation = NULL; /*!< Pointer to the 'first' heap
  */
 struct object_record
 {
-  size_t ref_count;    /*!< Reference count for the object member */    // 8 bytes
-  function1_t destroy; /*!< Pointer to a destructor function */         // 8 bytes
-  object_record_t *previous;
-  object_record_t *next; /*!< Pointer to next allocated object */       // 8 bytes
-  size_t arr_len;  /*!< Length of array, if an array. */                // 8 bytes
+  function1_t destroy;        /*!< Pointer to a destructor function */          // 8 bytes
+  object_record_t *previous;  /*!< Pointer to the previusly allocated object */ // 8 bytes
+  object_record_t *next;      /*!< Pointer to next allocated object */          // 8 bytes
+  rc_format arr_len;          /*!< Length of array, if an array. */             // 2 bytes
+  rc_format ref_count;        /*!< Reference count for the object member */     // 2 bytes
+  rc_format gratis1;
+  rc_format gratis2;
+  // Total: 32 bytes
+  
   //TODO: Implement ref_count, arr_len and if and object is an array or not, to a bitstring.
 };
+
+/* =================================
+ * -----------FUNCTIONS------
+ * =================================
+ */
 
 /**
  * Increments an objects reference count by one
@@ -60,16 +109,19 @@ void release(obj object)
 {
   if (object)
     {
+      if (!is_heap_object(object))
+        return;
+      
       object_record_t *record = OBJECT_TO_RECORD(object);
 
       if (rc(object) == 0)
-        deallocate(object, true);
+        deallocate(object);
 
       else
         {
           (record->ref_count)--;
           if (rc(object) == 0)
-            deallocate(object, true);
+            deallocate(object);
         }
     }
 }
@@ -80,7 +132,7 @@ void release(obj object)
  * \param o The object for wich to return the reference count
  * \return size_t The current reference count for the object
  */
-size_t rc(obj object)
+rc_format rc(obj object)
 {
   assert(object);
   object_record_t *record = OBJECT_TO_RECORD(object); 
@@ -99,6 +151,23 @@ void no_destructor(obj object)
   return;
 }
 
+/**
+ * Initializes the 'next' and 'previous' pointers for a newly allocated object_record_t
+ *
+ * \param record The object record that was allocated
+ */
+void set_heap_pointers(object_record_t *record)
+{
+  //Check if anything has been allocated yet
+  if (last_allocation)
+    last_allocation->next = record;
+
+  //Sets this object as the most recent allocation, points its previous pointer to the previous one
+  //and its next pointer to NULL
+  record->previous = last_allocation;
+  record->next     = NULL;
+  last_allocation  = record;
+}
 
 /**
  * Allocates space for an object on the heap together with additional meta data
@@ -117,22 +186,21 @@ obj allocate(size_t bytes, function1_t destructor)
   //Har vi skit som inte är freeat sen sist, gör det så länge vi inte överskrider cascade limit.
   //Om mängden ofreead data är mindre än 'bytes' måste vi dock freea tills vi har frigjorts
   // 'bytes' antal bytes eller tills det inte finns fler gamla objekt kvar.
-
+  printf("Size of object_record*: %zd\n", sizeof(object_record_t*));
+  printf("Size of rc_format: %zd\n", sizeof(rc_format));
+  printf("Size of function1_t: %zd\n", sizeof(function1_t));
+  printf("Size of object record: %zd\n", sizeof(object_record_t));
   set_cascade_limit(CASCADE_LIMIT); //reset cascade limit to its original value.
+  
+  if (outstanding_frees)
+    cleanup();
+  
   object_record_t *record = (object_record_t*) malloc(sizeof(*record) + bytes);
 
   record->ref_count = 0;
   record->destroy   = destructor ? destructor : no_destructor;
+  set_heap_pointers(record);
 
-  //Check if anything has been allocated yet
-  if (last_allocation)
-    last_allocation->next = record;
-
-  //Sets this object as the most recent allocation, points its previous pointer to the previous one
-  //and its next pointer to NULL
-  record->previous = last_allocation;
-  record->next     = NULL;
-  last_allocation  = record;
   return RECORD_TO_OBJECT(record);
 }
 
@@ -193,7 +261,7 @@ void redirect_heap_pointers(object_record_t *record)
   object_record_t *next     = record->next;
 
   //If no other heap objects remain then the final pointer is set to NULL
-  if (IS_LAST_ALLOCATION(record))
+  if (IS_ONLY_ALLOCATION(record))
     last_allocation = NULL;
 
   if(previous)
@@ -208,23 +276,47 @@ void redirect_heap_pointers(object_record_t *record)
 }
 
 /**
+ * Determines if an adress points to allocated memory
+ *
+ * \param object The adress to investigate
+ * \return bool true if 'object' points to allocated memory space, otherwise false.
+ */
+bool is_heap_object(obj object)
+{
+  object_record_t *record  = OBJECT_TO_RECORD(object);
+  object_record_t *current = last_allocation;
+  object_record_t *previous;
+
+  while (current)
+    {
+      previous   = current->previous;
+      if (record == current)
+        return true;
+
+      current    = previous;
+    }
+  return false;
+}
+
+/**
  * Deallocates an object by passing it to its associated destructor function.
  *
  * \param o The object to deallocate
- * \param destroy True if called through the retain function, if so the object's destructor is called.
  * \warning Passing NULL to the function causes an error, so does an object with a non-zero reference count.
  */
-void deallocate(obj object, bool destroy)
+void deallocate(obj object)
 {
-  assert(object);
+  assert(object); 
 
-  object_record_t *record = OBJECT_TO_RECORD(object);
-  redirect_heap_pointers(record);
-
-  if (destroy)
-    record->destroy(object); //TODO: Kontrollera att vi inte överskrider cascade limit
-
-  free(record);
+  if (is_heap_object(object)) 
+    {
+      assert(rc(object) == 0);
+  
+      object_record_t *record = OBJECT_TO_RECORD(object); 
+      redirect_heap_pointers(record);
+      record->destroy(object); //TODO: Kontrollera att vi inte överskrider cascade limit 
+      free(record);      
+    }
 }
 
 /**
@@ -262,7 +354,7 @@ void cleanup()
       obj object = RECORD_TO_OBJECT(current);
       
       if (rc(object) == 0) 
-        deallocate(object, true); 
+        deallocate(object); 
       
       current = previous;
     }
@@ -279,8 +371,9 @@ void shutdown()
   while (current)
     {
       previous   = current->previous;
-      obj object = RECORD_TO_OBJECT(current);
-      deallocate(object, false);
+      current->ref_count = 0;
+      obj object = RECORD_TO_OBJECT(current); 
+      deallocate(object);
       current    = previous;
     }
 }

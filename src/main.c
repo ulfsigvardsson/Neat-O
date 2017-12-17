@@ -34,7 +34,7 @@ void test_foo(char *name)
 {
   foo_t *foo = new_foo(name);
   retain(foo);
-  //release(foo); 
+  release(foo); 
 }
 
 void test_array()

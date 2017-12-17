@@ -24,13 +24,6 @@
 #define RECORD_TO_OBJECT(record) ((obj)(record + 1))
 
 /** 
- * \def IS_ONLY_ALLOCATION(record)
- * Given a pointer 'record', determines if it is the lone current heap allocation
- * by looking at its adjacent heap objects.
- */
-#define IS_ONLY_ALLOCATION(record) (!(record->previous) && !(record->next))
-
-/** 
  * \def CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
@@ -70,12 +63,9 @@ struct object_record
 {
   function1_t destroy;        /*!< Pointer to a destructor function */          // 8 bytes
   object_record_t *previous;  /*!< Pointer to the previusly allocated object */ // 8 bytes
-  object_record_t *next;      /*!< Pointer to next allocated object */          // 8 bytes
   rc_format arr_len;          /*!< Length of array, if an array. */             // 2 bytes
   rc_format ref_count;        /*!< Reference count for the object member */     // 2 bytes
-  rc_format gratis1;
-  rc_format gratis2;
-  // Total: 32 bytes
+  // Total: 24 bytes
   
   //TODO: Implement ref_count, arr_len and if and object is an array or not, to a bitstring.
 };
@@ -152,20 +142,16 @@ void no_destructor(obj object)
 }
 
 /**
- * Initializes the 'next' and 'previous' pointers for a newly allocated object_record_t
+ * Initializes the 'previous' pointer for a newly allocated object_record_t
  *
  * \param record The object record that was allocated
  */
 void set_heap_pointers(object_record_t *record)
 {
   //Check if anything has been allocated yet
-  if (last_allocation)
-    last_allocation->next = record;
 
-  //Sets this object as the most recent allocation, points its previous pointer to the previous one
-  //and its next pointer to NULL
-  record->previous = last_allocation;
-  record->next     = NULL;
+  //Sets this object as the most recent allocation and points its previous pointer to the previous one 
+  record->previous = last_allocation; 
   last_allocation  = record;
 }
 
@@ -186,9 +172,6 @@ obj allocate(size_t bytes, function1_t destructor)
   //Har vi skit som inte är freeat sen sist, gör det så länge vi inte överskrider cascade limit.
   //Om mängden ofreead data är mindre än 'bytes' måste vi dock freea tills vi har frigjorts
   // 'bytes' antal bytes eller tills det inte finns fler gamla objekt kvar.
-  printf("Size of object_record*: %zd\n", sizeof(object_record_t*));
-  printf("Size of rc_format: %zd\n", sizeof(rc_format));
-  printf("Size of function1_t: %zd\n", sizeof(function1_t));
   printf("Size of object record: %zd\n", sizeof(object_record_t));
   set_cascade_limit(CASCADE_LIMIT); //reset cascade limit to its original value.
   
@@ -249,6 +232,22 @@ char *strdup2(char *org)
   return result;
 }
 
+object_record_t *get_heap_successor(object_record_t *record)
+{
+  object_record_t *current = last_allocation;
+  object_record_t *previous;
+
+  while (current)
+    {
+      previous   = current->previous;
+      if (record == current->previous)
+        return current;
+
+      current    = previous;
+    }
+  return current;  
+}
+
 /**
  * Redirects pointers for an object to be deallocated.
  *
@@ -258,14 +257,11 @@ char *strdup2(char *org)
 void redirect_heap_pointers(object_record_t *record)
 {
   object_record_t *previous = record->previous;
-  object_record_t *next     = record->next;
+  object_record_t *next     = get_heap_successor(record);
 
   //If no other heap objects remain then the final pointer is set to NULL
-  if (IS_ONLY_ALLOCATION(record))
+  if (!previous && !next)
     last_allocation = NULL;
-
-  if(previous)
-    previous->next = next;
 
   if(next)
     next->previous = previous;
@@ -297,6 +293,7 @@ bool is_heap_object(obj object)
     }
   return false;
 }
+
 
 /**
  * Deallocates an object by passing it to its associated destructor function.

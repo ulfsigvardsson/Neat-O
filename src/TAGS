@@ -1,62 +1,44 @@
 
-hashmap.c,734
-#define INITIAL_SIZE 10,120
-#define MAX_CHAIN_LENGTH 11,147
-typedef struct _hashmap_element{_hashmap_element14,215
-  char* key;15,248
-  int in_use;16,261
-  any_t data;17,275
-} hashmap_element;18,289
-typedef struct _hashmap_map{_hashmap_map22,397
-  int table_size;23,426
-  int size;24,444
-  hashmap_element *data;data25,456
-} hashmap_map;26,481
-map_t hashmap_new(31,552
-static unsigned long crc32_tab[crc32_tab92,4075
-unsigned long crc32(149,7605
-unsigned int hashmap_hash_int(167,7918
-int hashmap_hash(191,8485
-int hashmap_rehash(221,9112
-int hashmap_put(261,9894
-int hashmap_get(289,10440
-int hashmap_iterate(325,11205
-int hashmap_remove(351,11748
-void hashmap_free(386,12463
-int hashmap_length(393,12600
-
 main.c,220
 typedef struct foo{foo6,80
   char *name;name7,100
 } foo_t;8,124
 void list_destructor(10,134
-void foo_destructor(19,231
-foo_t *new_foo(new_foo25,312
-void test_foo(33,456
-void test_array(39,524
-int main(47,656
+void foo_destructor(19,229
+foo_t *new_foo(new_foo25,309
+void test_foo(33,455
+void test_array(40,550
+int main(49,690
 
-refmem.c,719
-#define OBJECT_TO_RECORD(10,302
-#define RECORD_TO_OBJECT(14,552
-#define CASCADE_LIMIT 15,605
-typedef struct object_record object_record_t;17,633
-static size_t cascade_limit 19,680
-static object_record_t *heap_allocations heap_allocations20,774
-struct object_record28,1085
-  size_t ref_count;30,1108
-  function1_t destroy;31,1191
-  object_record_t *next;next32,1274
-  size_t arr_len;33,1357
-void retain(43,1749
-void release(58,2116
-size_t rc(77,2550
-void no_destructor(91,2966
-obj allocate(108,3459
-obj allocate_array(135,4457
-char *strdup2(strdup2154,5037
-void deallocate(177,5527
-void set_cascade_limit(193,5944
-size_t get_cascade_limit(203,6106
-void cleanup(211,6245
- void shutdown(228,6572
+refmem.c,1011
+#define OBJECT_TO_RECORD(17,408
+#define RECORD_TO_OBJECT(24,669
+#define IS_ONLY_ALLOCATION(31,893
+#define CASCADE_LIMIT 37,1064
+typedef struct object_record object_record_t;44,1208
+static size_t cascade_limit 51,1371
+static object_record_t *last_allocation last_allocation52,1465
+static bool outstanding_frees 53,1556
+struct object_record69,1953
+  function1_t destroy;71,1976
+  object_record_t *previous;previous72,2067
+  object_record_t *next;next73,2158
+  rc_format arr_len;74,2249
+  rc_format ref_count;75,2340
+  rc_format gratis1;76,2431
+  rc_format gratis2;77,2452
+void retain(93,2827
+void release(108,3188
+rc_format rc(135,3730
+void no_destructor(149,4149
+void set_heap_pointers(159,4348
+obj allocate(183,5178
+obj allocate_array(216,6445
+char *strdup2(strdup2235,7044
+void redirect_heap_pointers(258,7423
+bool is_heap_object(284,8167
+void deallocate(307,8734
+void set_cascade_limit(328,9210
+size_t get_cascade_limit(338,9377
+void cleanup(346,9516
+void shutdown(366,9907

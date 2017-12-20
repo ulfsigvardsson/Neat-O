@@ -2,18 +2,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+
+typedef struct link
+{
+  obj data;
+  struct link *next;
+}link_t;
+
+typedef struct list
+{
+  link_t *first;
+  link_t *last;
+}list_t;
 
 typedef struct foo{
   char *name; //8 bytes
 } foo_t;
 
+void link_destructor(obj o)
+{
+  link_t *link = (link_t*)o;
+  release(link->next);
+  release(link->data);
+}
+
 void list_destructor(obj o)
 {
-  if (get_cascade_limit() > 0)
-    {
-      //free next
-    }
+  list_t *list = (list_t*)o;
+  release(list->first);
+  release(list->last);
+}
 
+void test_list()
+{
+  list_t *list  = allocate(sizeof(list_t), list_destructor);
+  link_t *first = allocate(sizeof(link_t), link_destructor);
+  list->first = list->last = first;
+  
+  list->first->data = allocate(sizeof(char*), NULL);
+  retain(list->first->data);
+  retain(first);
+
+  link_t *current = first;
+  for (size_t i = 0; i < 2; i++) {
+    link_t *link = allocate(sizeof(link_t), link_destructor);
+    link->data = allocate(sizeof(char*), NULL);
+    retain(link->data);
+    retain(link);
+    current->next = link;
+    current = link;
+  }
+  
+  printf("Size of list + record: %zd\n", sizeof(*list) + 24);
+  printf("Size of NULL!!!: %zd\n", sizeof(NULL));
+  retain(list);
+  release(list);
 }
 
 void foo_destructor(obj o)
@@ -22,8 +66,8 @@ void foo_destructor(obj o)
   release(foo->name);
 }
 
-foo_t *new_foo(char *name)
-{
+  foo_t *new_foo(char *name)
+  {
   foo_t *foo = allocate(sizeof(foo_t), foo_destructor);
   foo->name = strdup2(name);
   retain(foo);
@@ -35,26 +79,41 @@ void test_foo(char *name)
   foo_t *foo = new_foo(name);
   retain(foo);
   release(foo); 
-}
+  }
 
-void test_array()
+char** test_array()
 {
-  char *array = (char*) allocate_array(2, sizeof(char), NULL);
+  char **array = (char**)allocate_array(2, sizeof(char*), NULL);
   retain(array);
-  array[0] = 'a';
-  release(array);
+  array[0] = "Foo";
+  array[1] = "Bar";
+  for (int i= 0; i < 2; i++) {
+    printf("Array[%d]: %s\n", i, array[i]);
+  } 
+  return array;
 }
-
 
 int main(int argc, char *argv[])
 {
-  char *test2 = strdup2("bajs");
-  char *test =strdup2("test");
-  retain(test);
-  test_foo("Foo");
-  char *hej = strdup2("hejsan!"); 
+  printf("Innan test_list\n");
+  test_list();
+  printf("Efter test_list\n");
+  
+  for (int i = 0; i < 100; i++) {
+    printf("Iteration nr: %d\n", i+1);
+    char * temp = strdup2("foo");
+    release(temp);
+  }
+ 
+  /* char *bajs = strdup2("bahjhjhjhjjs"); */
+  /* char *bajs2 = strdup2("bajs"); */
+  /* release(bajs); */
+  /* release(bajs2); */
+  
+  /* printf("Innan cleanup.\n"); */
   cleanup();
-  shutdown();
+    //shutdown();
+
   return 0;
 }
 

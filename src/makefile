@@ -10,7 +10,7 @@ run: main
 main: main.o refmem.o
 	$(CC) $(CFLAGS) $? -o $@
 
-main.o: refmem.h
+main.o: refmem.h refmem.o
 
 refmem.o: refmem.h
 

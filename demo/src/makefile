@@ -1,36 +1,30 @@
 CC=gcc
 FLAGS= -Wall -g
-TESTFLAGS= -Wall -pg -fprofile-arcs -ftest-coverage -fPIC
+SRCDIR = ../../src/
 
 lager: lager.c list.o tree.o item.o utils.o shelfinfo.o undo.o refmem.o
-	$(CC) $(FLAGS) -O0 $^ -o $@
+	$(CC) $(FLAGS) $^ -o $@
 
-list.o: list.h list.c
+list.o: list.h list.c $(SRCDIR)refmem.o
 	$(CC) $(FLAGS) list.c -c
 
-tree.o: tree.h tree.c
+tree.o: tree.h tree.c $(SRCDIR)refmem.o
 	$(CC) $(FLAGS) tree.c -c
 
-item.o: list.o item.c item.h
+item.o: list.o item.c item.h $(SRCDIR)refmem.o
 	$(CC) $(FLAGS) item.c list.c -c
 
-utils.o: utils.c utils.h
+utils.o: utils.c utils.h $(SRCDIR)refmem.o
 	$(CC) $(FLAGS) utils.c -c
 
-shelfinfo.o: shelfinfo.c shelfinfo.h
+shelfinfo.o: shelfinfo.c shelfinfo.h $(SRCDIR)refmem.o
 	$(CC) $(FLAGS) shelfinfo.c -c
 
-undo.o: undo.c undo.h common.h tree.o item.o
+undo.o: undo.c undo.h common.h tree.o item.o $(SRCDIR)refmem.o
 	$(CC) $(FLAGS) undo.c tree.c item.c -c
 
-refmem.o: refmem.c refmem.h
-	$(CC) $(FLAGS) refmem.c -c
-
-test:	test.c list.o tree.o item.o undo.o shelfinfo.o utils.o
-	$(CC) $(FLAGS) test.c list.c tree.c item.c utils.c shelfinfo.c undo.c -o test -lcunit
-
-analysis: analysis.c list.o tree.o
-	$(CC) $(TESTFLAGS) $^ -o $@
+refmem.o: $(SRCDIR)refmem.c $(SRCDIR)refmem.h
+	$(CC) $(FLAGS) $(SRCDIR)refmem.c -c
 
 run : lager
 	./lager db.txt

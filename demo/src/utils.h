@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-#include "refmem.h"
+#include "../../src/refmem.h"
 
 //Prints question. clear input-buffer. Will only return a uppercase char followed by 1 more digits.
 // Example: "A25", "B1" "C374652365475"

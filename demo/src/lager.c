@@ -734,14 +734,14 @@ void stripline(char *c)
 
 item_t *load_item_from_file(FILE *f)
 {
-  unsigned long bytes = 0;
-  char *name  = NULL;
-  char *descr = NULL;
-  char *cost  = NULL;
+  char *name  = allocate_array(100, sizeof(char), NULL);
+  char *descr = allocate_array(100, sizeof(char), NULL);
+  char *cost  = allocate_array(20, sizeof(char), NULL);
 
-  getline(&name, &bytes, f);
-  getline(&descr,&bytes, f);
-  getline(&cost, &bytes, f);
+  fgets(name, 100, f);
+  fgets(descr, 100, f);
+  fgets(cost, 20, f);
+  
   stripline(name);
   stripline(descr);
 
@@ -753,40 +753,39 @@ item_t *load_item_from_file(FILE *f)
   
   for (int i = 0; i < shelf_count; ++i)
     {
-      char *shelf_name = NULL;
-      char *shelf_amount = NULL;
-
-      getline(&shelf_name, &bytes, f);
-      getline(&shelf_amount, &bytes, f);
+      char *shelf_name   = allocate_array(4, sizeof(char), NULL);
+      char *shelf_amount = allocate_array(20, sizeof(char), NULL);
+      //char *shelf_name = NULL;
+      //char *shelf_amount = NULL;
+      fgets(shelf_name, 4, f);
+      fgets(shelf_amount, 20, f);
+      //getline(&shelf_name, &bytes, f);
+      //getline(&shelf_amount, &bytes, f);
 
       stripline(shelf_name);
       stripline(shelf_amount);
       
       elem_t shelf = { .p = shelf_new(strdup2(shelf_name), atoi(shelf_amount))};
       list_append(shelves, shelf);
-      free(shelf_name);
-      free(shelf_amount);
     }
-  free(name);
-  free(descr);
-  free(cost);
   return item;
 }
 
 tree_t *read_db(char *path)
 {
-      FILE *f = fopen(path, "r");
-      int size   = db_size(f);
-      tree_t *db = tree_new(item_copy, key_free, item_free, item_compare);
+  FILE *f    = fopen(path, "r");
+  int size   = db_size(f);
+  tree_t *db = tree_new(item_copy, key_free, item_free, item_compare);
   
-      for (int i = 0; i < size; ++i)
-        {
-          elem_t item = { .p = load_item_from_file(f) };
-          elem_t key = { .p = strdup2(item_name(item.p))};
-          tree_insert(db, key, item);
-        }
-      fclose(f);
-      return db;
+  for (int i = 0; i < size; ++i)
+    {
+      elem_t item = { .p = load_item_from_file(f) };
+      elem_t key  = { .p = strdup2(item_name(item.p))};
+      tree_insert(db, key, item);
+    }
+  
+  fclose(f);
+  return db;
 } 
 
 /// Huvudloop för programmet. 

@@ -1,37 +1,25 @@
-6
-Hall
-d
 4
+Banan
+En banan
+9
 1
-H67
- 4
-Bajs
-bajs
-3
+A3
+ 20
+Hammare
+Ett verktyg
+30
 1
-F33
- 3
-Lollo
-F
-4
+A1
+ 10
+Kaffe
+Svart kaffe
+15
 1
-F41
- 6
-JFDS
-3
-3
+A2
+ 30
+Skridskor
+Skrillor
+250
 1
-D33
- 3
-hejsan
-d
-4
-1
-H5
- 4
-bajs
-asd
-3
-1
-F3
- 3
+G6
+ 13

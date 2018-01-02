@@ -7,7 +7,7 @@
 #include "common.h"
 #include "tree.h"
 #include "item.h"
-#include "../../src/refmem.h"
+#include "../src/refmem.h"
 
 typedef struct undo_action undo_action_t;
 

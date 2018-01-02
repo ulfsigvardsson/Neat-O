@@ -3,7 +3,7 @@
 #define ITEM_H
 #include "list.h"
 #include "common.h"
-#include "../../src/refmem.h"
+#include "../src/refmem.h"
 
 //! \brief Typedef för lagervaru-strukten
 typedef struct item item_t;

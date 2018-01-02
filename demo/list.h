@@ -7,7 +7,7 @@
 
 #include <stdbool.h>
 #include "common.h"
-#include "../../src/refmem.h"
+#include "../src/refmem.h"
 
 /*! Skapar en typedef för list */ 
 typedef struct list list_t;

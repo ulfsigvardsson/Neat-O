@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "common.h"
-#include "../../src/refmem.h"
+#include "../src/refmem.h"
 
 enum owner {OTHER, NONE, SELF};
 

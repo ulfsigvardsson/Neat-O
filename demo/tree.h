@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include "common.h"
-#include "../../src/refmem.h"
+#include "../src/refmem.h"
 
 typedef elem_t tree_key_t;
 typedef element_free_fun key_free_fun;

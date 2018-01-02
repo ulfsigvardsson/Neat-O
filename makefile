@@ -1,6 +1,7 @@
-SRCDIR = src
-DEMODIR = demo/src
-OBJDIR = src/obj
+SOURCEDIR = ./src
+DEMODIR = ./demo
+OBJECTDIR = ./obj
+BINARYDIR = ./bin
 CFLAGS = -g -Werror
 CC = gcc
 RM = -rm -f
@@ -8,7 +9,7 @@ RM = -rm -f
 .PHONY: clean, demo
 
 srcclean:
-	$(MAKE) clean -C $(SRCDIR)
+	$(MAKE) clean -C $(SOURCEDIR)
 
 democlean:
 	$(MAKE) clean -C $(DEMODIR)

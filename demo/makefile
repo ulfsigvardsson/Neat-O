@@ -1,6 +1,6 @@
 CC=gcc
 FLAGS= -Wall -g
-SRCDIR = ../../src/
+SRCDIR = ../src/
 
 lager: lager.c list.o tree.o item.o utils.o shelfinfo.o undo.o refmem.o
 	$(CC) $(FLAGS) $^ -o $@
@@ -37,11 +37,7 @@ valgrind: lager
  
 clean:
 	rm -f *.o
-	rm -rf *.dSYM
 	rm -f lager
 	rm -f *~
-	rm -f *.gcno
-	rm -f *.gcda
-	rm -f *.gcov
-	rm -f test
-	rm -f gmon.out
+	rm -f *.*~
+	rm -f *.*#

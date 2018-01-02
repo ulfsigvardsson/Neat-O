@@ -38,29 +38,30 @@ void test_list()
   list_t *list  = allocate(sizeof(list_t), list_destructor);
   link_t *first = allocate(sizeof(link_t), link_destructor);
   list->first = list->last = first;
-  
+
   list->first->data = allocate(sizeof(char*), NULL);
   retain(list->first->data);
   retain(first);
 
   link_t *current = first;
 
-  for (size_t i = 0; i < 30000; i++) {
+  for (size_t i = 0; i < 3; i++) {
     link_t *link = allocate(sizeof(link_t), link_destructor);
     link->data = allocate(sizeof(char*), NULL);
     retain(link->data);
     retain(link);
+    link->next = NULL;
     current->next = link;
     current = link;
   }
-  
+
   retain(list);
   release(list);
 }
 
 void foo_destructor(obj o)
 {
-  
+
   foo_t *foo = (foo_t*)o;
   printf("Record count för strängen: ");
   release(foo->name);
@@ -89,20 +90,20 @@ char** test_array()
   array[1] = "Bar";
   for (int i= 0; i < 2; i++) {
     printf("Array[%d]: %s\n", i, array[i]);
-  } 
+  }
   return array;
 }
 
 int main(int argc, char *argv[])
 {
-  printf("Innan test_list\n");
+  printf("innan test_list\n");
   test_list();
-  printf("Efter test_list\n");
-  
+  printf("efter test_list\n");
+
   for (int i = 0; i < 100; i++) {
-    printf("Iteration nr: %d\n", i+1);
-    char * temp = strdup2("foo");
-    release(temp);
+	printf("iteration nr: %d\n", i+1);
+	char * temp = strdup2("foo");
+	release(temp);
   }
 
   char *bajs = strdup2("bajs");
@@ -113,10 +114,10 @@ int main(int argc, char *argv[])
   release(bajs);
   char *bajs2 = strdup2("bajs");
   release(bajs2);
-  
+
   printf("Innan cleanup.\n");
   cleanup();
-  shutdown();
+  //shutdown();
 
   return 0;
 }

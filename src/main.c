@@ -37,22 +37,21 @@ void test_list()
 {
   list_t *list  = allocate(sizeof(list_t), list_destructor);
   link_t *first = allocate(sizeof(link_t), link_destructor);
-  list->first = list->last = first;
+  list->first   = list->last = first;
 
-  list->first->data = allocate(sizeof(char*), NULL);
-  retain(list->first->data);
+  list->first->data = strdup2("Test");
   retain(first);
-
+  
   link_t *current = first;
 
-  for (size_t i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 2; i++) {
     link_t *link = allocate(sizeof(link_t), link_destructor);
-    link->data = allocate(sizeof(char*), NULL);
-    retain(link->data);
+    link->data   = strdup2("Test");
     retain(link);
-    link->next = NULL;
+    link->next    = NULL;
     current->next = link;
-    current = link;
+    current       = link;
+    list->last    = link;
   }
 
   retain(list);
@@ -101,23 +100,16 @@ int main(int argc, char *argv[])
   printf("efter test_list\n");
 
   for (int i = 0; i < 100; i++) {
-	printf("iteration nr: %d\n", i+1);
-	char * temp = strdup2("foo");
-	release(temp);
+    printf("iteration nr: %d\n", i+1);
+    char * temp = strdup2("foo");
+    release(temp);
   }
 
-  char *bajs = strdup2("bajs");
-  foo_t *foo = test_foo(bajs);
-  char *bajs3 = bajs;
-  retain(bajs3);
-  release(foo);
-  release(bajs);
-  char *bajs2 = strdup2("bajs");
-  release(bajs2);
+
 
   printf("Innan cleanup.\n");
   cleanup();
-  //shutdown();
+  shutdown();
 
   return 0;
 }

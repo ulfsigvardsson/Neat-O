@@ -1,5 +1,5 @@
 
-main.c,493
+main.c,504
 typedef struct link7,100
   obj data;9,122
   struct link *next;next10,134
@@ -13,42 +13,42 @@ typedef struct foo{foo19,230
 } foo_t;21,274
 void link_destructor(23,284
 void list_destructor(30,392
-void test_list(37,501
-void foo_destructor(63,1196
-  foo_t *new_foo(new_foo69,1276
-void test_foo(77,1426
-char** test_array(84,1521
-int main(96,1764
+void test_list(36,478
+void foo_destructor(62,1066
+  foo_t *new_foo(new_foo70,1190
+foo_t *test_foo(test_foo79,1352
+char** test_array(85,1429
+int main(97,1671
 
-refmem.c,1090
+refmem.c,1068
 #define CALCULATE_SIZE(17,404
 #define OBJECT_TO_RECORD(24,696
-#define RECORD_TO_OBJECT(30,947
-#define CASCADE_LIMIT 36,1096
-typedef struct object_record object_record_t;43,1238
-static size_t cascade_limit 50,1401
-static object_record_t *last_allocation last_allocation51,1498
-static bool outstanding_frees 52,1617
-static object_record_t *remaining_garbage remaining_garbage53,1727
-struct object_record69,2245
-  function1_t destroy;71,2268
-  object_record_t *previous;previous72,2359
-  rc_format ref_count;73,2450
-  short array_length;74,2541
-void retain(89,2893
-void release(104,3254
-rc_format rc(125,3754
-void no_destructor(139,4173
-void set_heap_pointers(149,4360
-obj allocate(166,4926
-void cleanup_before_allocation(194,5778
-obj allocate_array(224,6681
-char *strdup2(strdup2241,7197
-object_record_t *get_heap_successor(get_heap_successor259,7546
-void redirect_heap_pointers(281,7989
-bool is_heap_object(304,8696
-void deallocate(328,9264
-void set_cascade_limit(353,9896
-size_t get_cascade_limit(366,10110
-void cleanup(374,10249
-void shutdown(394,10640
+#define RECORD_TO_OBJECT(30,949
+#define CASCADE_LIMIT 36,1097
+typedef struct object_record object_record_t;47,1277
+static size_t cascade_limit 54,1440
+static object_record_t *last_allocation last_allocation55,1537
+static object_record_t *remaining_garbage remaining_garbage56,1658
+struct object_record71,2143
+  function1_t destroy;73,2166
+  object_record_t *next;next74,2258
+  object_record_t *previous;previous75,2345
+  rc_format ref_count;76,2437
+  short array_length;77,2529
+void set_heap_pointers(91,2896
+void set_garbage_pointers(107,3237
+void redirect_garbage_pointers(123,3600
+void redirect_heap_pointers(137,3907
+void retain(164,4591
+void release(179,4952
+rc_format rc(207,5597
+void no_destructor(221,6013
+obj allocate(238,6505
+void cleanup_before_allocation(258,7009
+obj allocate_array(292,7879
+char *strdup2(strdup2309,8372
+void deallocate(334,8960
+void set_cascade_limit(353,9305
+size_t get_cascade_limit(366,9518
+void cleanup(374,9657
+void shutdown(393,9982

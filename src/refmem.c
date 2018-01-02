@@ -33,7 +33,7 @@
  * @def CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define CASCADE_LIMIT 10
+#define CASCADE_LIMIT 90
 
 /* =================================
  * --------TYPE DEFINITIONS---------
@@ -52,8 +52,7 @@ typedef struct object_record object_record_t;
  */
 
 static size_t cascade_limit = CASCADE_LIMIT;     /*!< The cascade limit with a default value. */
-static object_record_t *last_allocation = NULL;  /*!< Pointer to the most recently allocated heap object with rc > 0*/
-static bool outstanding_frees = false;           /*!< Boolean representing the presence of unfree'd memory */
+static object_record_t *last_allocation   = NULL;  /*!< Pointer to the most recently allocated heap object with rc > 0*/
 static object_record_t *remaining_garbage = NULL;/*!< Pointer to the 'first' remaining heap object with rc == 0 */
 
 /* =================================
@@ -107,11 +106,13 @@ void set_heap_pointers(object_record_t *record)
  */
 void set_garbage_pointers(object_record_t *record)
 {
-	record->previous = remaining_garbage;
-	record->next = NULL;
-	if (remaining_garbage)
-		remaining_garbage->next = record;
-	remaining_garbage  = record;
+  record->previous = remaining_garbage;
+  record->next     = NULL;
+        
+  if (remaining_garbage)
+    remaining_garbage->next = record;
+
+  remaining_garbage  = record;
 }
 
 /**
@@ -121,9 +122,26 @@ void set_garbage_pointers(object_record_t *record)
  */
 void redirect_garbage_pointers(object_record_t *record)
 {
-	object_record_t *previous = record->previous;
+  if (record)
+    {
+      object_record_t *previous = record->previous;
+      object_record_t *next     = record->next;
 
-	remaining_garbage = previous;
+      //If no other heap objects remain then the final pointer is set to NULL
+      if (!previous && !next)
+        remaining_garbage = NULL;
+
+      if(next)
+        next->previous = previous;
+
+      if(previous)
+        previous->next = next;
+
+      //Corner case: if this is the most recent allocation then last_allocation is stepped back one step in the list
+      if(remaining_garbage == record)
+        remaining_garbage = previous;  
+    } 
+  
 }
 
 /**
@@ -133,24 +151,24 @@ void redirect_garbage_pointers(object_record_t *record)
  */
 void redirect_heap_pointers(object_record_t *record)
 {
-	object_record_t *previous = record->previous;
-	object_record_t *next     = record->next;
+  object_record_t *previous = record->previous;
+  object_record_t *next     = record->next;
 
-	//If no other heap objects remain then the final pointer is set to NULL
-	if (!previous && !next)
-		last_allocation = NULL;
+  //If no other heap objects remain then the final pointer is set to NULL
+  if (!previous && !next)
+    last_allocation = NULL;
 
-	if(next)
-		next->previous = previous;
+  if(next)
+    next->previous = previous;
 
-	if(previous)
-		previous->next = next;
+  if(previous)
+    previous->next = next;
 
-	//Corner case: if this is the most recent allocation then last_allocation is stepped back one step in the list
-	if (last_allocation == record)
-		last_allocation = previous;
+  //Corner case: if this is the most recent allocation then last_allocation is stepped back one step in the list
+  if (last_allocation == record)
+    last_allocation = previous;
 
-	set_garbage_pointers(record);
+  set_garbage_pointers(record);
 }
 
 /**
@@ -180,17 +198,16 @@ void release(obj object)
       object_record_t *record = OBJECT_TO_RECORD(object);
       (record->ref_count)--;
 
-
       if (rc(object) <= 0)
       	{
-			redirect_heap_pointers(record);
+          redirect_heap_pointers(record);
 
-        	if(get_cascade_limit() > 0)
-        	{
-				int size_freed = CALCULATE_SIZE(object, record);
-        		deallocate(object);
-				set_cascade_limit(get_cascade_limit()-size_freed);
-    		}
+          if(get_cascade_limit() > 0)
+            {
+              int size_freed = CALCULATE_SIZE(object, record);
+              deallocate(object);
+              set_cascade_limit(get_cascade_limit()-size_freed);
+            }
     	}
     }
 }
@@ -254,27 +271,22 @@ obj allocate(size_t bytes, function1_t destructor)
 
 void cleanup_before_allocation(size_t bytes)
 {
-	size_t released_memory   = 0;
+  size_t released_memory = 0;
+  
+  while (remaining_garbage && (released_memory <= bytes || get_cascade_limit() > 0))
+    {
+      obj object = RECORD_TO_OBJECT(remaining_garbage);
 
-	while (remaining_garbage)
-	{
-		int old_limit  = get_cascade_limit();
+      if (rc(object) <= 0)
+        {
+          released_memory += CALCULATE_SIZE(object, remaining_garbage);
+          size_t new_limit = get_cascade_limit()-released_memory;
+          deallocate(object);
+          set_cascade_limit(new_limit);
+        }
 
-		if (released_memory <= bytes || old_limit > 0)
-		{
-			obj object = RECORD_TO_OBJECT(remaining_garbage);
-
-			if (rc(object) <= 0)
-			{
-				size_t new_limit = old_limit-CALCULATE_SIZE(object, remaining_garbage);
-				released_memory += CALCULATE_SIZE(object, remaining_garbage);
-				deallocate(object);
-				set_cascade_limit(new_limit);
-			}
-
-		}
-		redirect_garbage_pointers(remaining_garbage);
-	}
+      redirect_garbage_pointers(remaining_garbage);
+    }
 }
 
 /**
@@ -330,14 +342,14 @@ char *strdup2(char *org)
  */
 void deallocate(obj object)
 {
-	assert(object);
+  assert(object);
 
-	object_record_t *record = OBJECT_TO_RECORD(object);
+  object_record_t *record = OBJECT_TO_RECORD(object);
 
-	assert(rc(object) <= 0);
-	redirect_garbage_pointers(record);
-	record->destroy(object);
-	free(record);
+  assert(rc(object) <= 0);
+  redirect_garbage_pointers(record);
+  record->destroy(object);
+  free(record);
 
 }
 
@@ -370,18 +382,18 @@ size_t get_cascade_limit()
  */
 void cleanup()
 {
-	object_record_t *current = remaining_garbage;
-	object_record_t *previous;
+  object_record_t *current = remaining_garbage;
+  object_record_t *previous;
 
-	while (current)
-	{
-		previous   = current->previous;
-		obj object = RECORD_TO_OBJECT(current);
+  while (current)
+    {
+      previous   = current->previous;
+      obj object = RECORD_TO_OBJECT(current);
 
-		deallocate(object);
-
-		current = previous;
-	}
+      deallocate(object);
+      
+      current = previous;
+    }
 }
 
 /**
@@ -389,14 +401,14 @@ void cleanup()
  */
 void shutdown()
   {
-    object_record_t *current = last_allocation;
-    object_record_t *previous;
+    object_record_t *current = last_allocation; 
 
+    cleanup();
+    
     while (current)
       {
-        object_record_t *temp = current;
-        previous   = current->previous;
-        current    = previous;
+        object_record_t *temp = current; 
+        current    = current->previous;
         free(temp);
       }
   }

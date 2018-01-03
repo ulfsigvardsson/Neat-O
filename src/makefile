@@ -15,9 +15,8 @@ main.o: refmem.h refmem.o
 refmem.o: refmem.h
 
 clean:
-	$(RM) main
 	$(RM) *.o
 	$(RM) *.*~
-	$(RM) *.*#
+	$(RM) *^#*
 
 .PHONY: clean

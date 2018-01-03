@@ -1,0 +1,299 @@
+
+analysis.c,15
+int main(6,58
+
+file.c,57
+int db_size(9,113
+int load_db(18,200
+int main(53,1006
+
+item.c,1081
+struct item 7,80
+  char *name;name8,94
+  char *descr;descr9,108
+  int price;10,123
+  list_t *shelves;shelves11,136
+struct shelf17,203
+  char *id;id19,218
+  int amount;20,250
+shelf_t *shelf_new(shelf_new23,306
+shelf_t *shelf_empty(shelf_empty32,457
+item_t *item_new(item_new38,540
+void item_add_shelf(52,847
+void item_set_name(57,937
+void item_set_description(68,1087
+void item_set_price(79,1246
+void item_set_shelf(85,1330
+void item_set_shelves(91,1414
+char *item_name(item_name96,1499
+char *item_descr(item_descr101,1555
+void set_item_name(106,1613
+int item_price(114,1712
+list_t *item_shelves(item_shelves119,1768
+char *shelf_id(shelf_id125,1858
+void set_shelf_id(131,1940
+int shelf_amount(136,2007
+void shelf_set_amount(140,2069
+void shelf_add_amount(144,2149
+int shelf_compare(153,2306
+int item_compare(163,2594
+void item_free(173,2868
+void shelf_free_aux(188,3140
+void key_free(197,3248
+void shelf_free(207,3366
+elem_t shelf_copy(213,3477
+elem_t item_copy(219,3578
+elem_t shelf_deep_copy(225,3629
+elem_t item_deep_copy(239,3909
+
+lager.c,1499
+#define InvalidIndex 12,193
+#define MainMenuChoice 13,217
+#define AskName 14,301
+#define AskDescription 15,352
+#define AskPrice 16,417
+#define AskShelf 17,466
+#define AskAmount 18,523
+#define ConfirmAddition 19,585
+#define AskRemoveShelf 20,693
+#define ShelfIsInList 21,771
+#define AskWhatToEdit 22,835
+void print_main_menu(35,1499
+bool print_shelf(49,2023
+void print_shelves(57,2214
+void print_item(66,2405
+int select_existing_shelf(83,2886
+bool shelf_is_equal(110,3570
+bool shelf_is_in_list(131,4173
+char *find_available_shelf(find_available_shelf148,4671
+void merge_shelves(179,5497
+void edit_shelf_name(203,6364
+void edit_shelves(223,6892
+void edit_description(245,7473
+void edit_price(255,7857
+void edit_name(265,8219
+void edit_item_aux(277,8643
+void remove_shelves(321,9769
+void db_remove_item(341,10329
+void add_existing_item(385,11485
+int ask_new_amount(418,12324
+int ask_new_price(430,12514
+void db_add_item(444,12907
+void list_20_items(516,14934
+bool list_db(529,15269
+int *index_menu_choices(index_menu_choices566,16088
+bool valid_index(576,16411
+elem_t select_by_index(587,16709
+void list_and_select_item(617,17297
+void edit_item(628,17487
+void edit_db(648,17974
+void db_check_sorting(661,18202
+int db_size(675,18435
+bool write_item_to_file(682,18519
+void save_db(704,19159
+void stripline(723,19459
+item_t *load_item_from_file(load_item_from_file729,19530
+tree_t *read_db(read_db769,20452
+void event_loop(786,20905
+int main(818,21708
+
+list.c,839
+typedef struct link link_t;3,19
+struct link5,48
+  elem_t elem;7,62
+  link_t *next;next8,77
+struct list11,97
+  link_t *first;first13,111
+  link_t *last;last14,128
+  element_copy_fun copy_f;15,144
+  element_free_fun free_f;16,171
+  element_comp_fun cmp_f;17,198
+  size_t size;18,224
+elem_t list_no_copy(22,244
+list_t *list_new(list_new36,702
+link_t *link_new(link_new47,981
+int adjust_index_insert(55,1161
+int adjust_index_get(76,1598
+link_t **list_find(list_find97,2025
+void make_singleton(109,2264
+void list_insert(128,2973
+bool empty_list(154,3592
+void list_append(166,3971
+void list_prepend(192,4797
+bool list_get(203,5170
+bool list_first(225,5753
+bool list_last(232,5920
+int list_length(247,6354
+void list_remove(263,6848
+void list_delete(285,7356
+bool list_apply(302,7842
+int list_contains(326,8471
+
+shelfinfo.c,495
+struct shelf_info 3,24
+  bool exists;4,44
+  enum owner owner;5,59
+  char *item_name;item_name6,79
+  char *shelf_id;shelf_id7,98
+shelf_info_t *shelf_info_new(shelf_info_new10,121
+shelf_info_t *info_initiate(info_initiate15,226
+bool info_exists(24,439
+enum owner info_owner(28,504
+char *info_name(info_name32,573
+char *info_id(info_id36,640
+void set_info_exists(40,704
+void set_info_owner(44,782
+void set_info_name(48,868
+void set_info_id(52,950
+void set_shelf_owner(56,1025
+
+test.c,1217
+int tree_compare_int(10,156
+elem_t string_copy(18,285
+int comp_fun_string(25,368
+void list_insert_test(32,492
+void list_new_test(57,1171
+void list_append_test(63,1273
+void list_prepend_test(82,1782
+void list_get_test(106,2302
+void list_first_test(127,2786
+void list_last_test(146,3240
+void list_remove_test(162,3689
+bool list_apply_fun(185,4388
+void list_apply_test(193,4495
+void list_contains_test(207,4799
+void tree_new_test(225,5321
+void tree_insert_test(231,5430
+void tree_height_test(249,5807
+void tree_get_test(278,6511
+void tree_remove_test(307,7292
+void tree_elements_test(345,8252
+void tree_keys_test(381,9120
+void tree_delete_test(414,10002
+void tree_balance_test(446,10825
+void item_new_test(486,11823
+void item_set_name_test(507,12447
+void item_set_description_test(514,12628
+void item_set_price_test(521,12824
+void shelf_new_test(528,12989
+void item_set_shelf_test(535,13155
+void shelf_add_amount_test(549,13466
+void item_set_shelves_test(556,13618
+void shelf_compare_test(577,14390
+void item_compare_test(587,14674
+void shelf_deep_copy_test(597,14905
+void item_deep_copy_test(606,15175
+void undo_new_test(629,16046
+void undo_reset_test(635,16141
+int main(648,16420
+
+tree.c,1670
+#define Compare(4,39
+#define Compare_keys 5,82
+#define Comp 6,131
+#define Copy 7,156
+#define Free_elem 8,182
+#define Free_key 9,215
+#define Apply_key 10,247
+#define Apply_left 11,298
+#define Apply_right 12,367
+#define Is_leaf 13,438
+#define Leaf 14,499
+#define Full 15,557
+#define Right 16,612
+#define Left 17,646
+struct node20,708
+  elem_t elem;22,722
+  tree_key_t key;23,757
+  node_t *left;left24,794
+  node_t *right;right25,840
+  int height;26,885
+struct tree30,950
+  node_t *root;root32,964
+  element_copy_fun copy_f;33,1001
+  element_free_fun e_free_f;34,1081
+  key_free_fun k_free_f;35,1160
+  element_comp_fun cmp_f;36,1235
+  size_t size;37,1312
+void *get_root_elem(get_root_elem42,1459
+elem_t tree_no_copy(49,1654
+void tree_no_free(56,1859
+int tree_no_compare(64,2085
+node_t *node_new(node_new76,2335
+tree_t *tree_new(tree_new90,2772
+bool tree_delete_elems(114,3513
+bool tree_delete_keys(126,3890
+void tree_delete_nodes(135,4142
+void tree_delete(154,4601
+int tree_size(172,5016
+int max(178,5113
+int tree_depth_aux(184,5207
+int tree_depth(197,5475
+node_t **tree_traverse(tree_traverse210,5827
+bool get_balance_aux(230,6156
+bool get_balance(240,6384
+void build_tree_aux(246,6483
+void tree_balance(264,6928
+bool tree_insert(296,7990
+bool tree_has_key(331,8780
+bool tree_get(343,9168
+void free_node(359,9415
+node_t **find_smallest_successor(find_smallest_successor367,9591
+bool tree_remove(382,9998
+void tree_keys_aux(433,11648
+tree_key_t *tree_keys(tree_keys450,12054
+void tree_elements_aux(463,12548
+elem_t *tree_elements(tree_elements480,13030
+bool node_apply(495,13690
+bool tree_apply(547,15005
+
+undo.c,613
+struct undo_action4,20
+  elem_t added;6,41
+  elem_t removed;7,57
+  elem_t edit_old;8,75
+  elem_t edit_new;9,94
+  last_action_t last_action;10,113
+undo_action_t *undo_new(undo_new14,197
+void undo_reset(22,400
+void undo_free(64,1362
+last_action_t undo_get_last_action(79,1665
+void undo_set_last_action(84,1754
+elem_t undo_get_edit_old(89,1858
+void undo_set_edit_old(94,1934
+elem_t undo_get_edit_new(99,2039
+void undo_set_edit_new(104,2115
+elem_t undo_get_removed(109,2220
+void undo_set_removed(114,2294
+elem_t undo_get_added(119,2397
+void undo_set_added(124,2467
+void undo_last_action(130,2601
+
+utils.c,790
+  int   i;4,36
+  float f;5,47
+  char *s;s6,58
+  char c;7,69
+} answer_t;8,79
+typedef bool(*check_func)check_func11,93
+typedef answer_t(*convert_func)convert_func12,128
+bool is_menu_choice(29,653
+char ask_question_menu(39,857
+answer_t make_float(51,1146
+double ask_question_float(55,1222
+char *ask_question_shelf(ask_question_shelf60,1381
+bool is_valid_shelf(67,1587
+bool is_float(83,1981
+void clear_input_buffer(103,2412
+bool not_empty(117,2784
+answer_t ask_question(123,2843
+int ask_question_int(142,3279
+char *ask_question_string(ask_question_string148,3499
+char ask_question_char(154,3677
+char chardup(159,3819
+bool is_single_char(163,3863
+void print_menu(167,3924
+int read_string(171,3979
+bool is_number(198,4673
+void print(221,5220
+void println(229,5338

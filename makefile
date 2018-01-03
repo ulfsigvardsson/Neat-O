@@ -1,19 +1,19 @@
-SRCDIR = src
-OBJDIR = src/obj
+SOURCEDIR = ./src
+DEMODIR = ./demo
+OBJECTDIR = ./obj
+BINARYDIR = ./bin
 CFLAGS = -g -Werror
 CC = gcc
 RM = -rm -f
 
-run: main
-	./src/main
-
-main: 
-	$(MAKE) main -C $(SRCDIR)
-
-.PHONY: clean
+.PHONY: clean, demo
 
 srcclean:
-	$(MAKE) clean -C $(SRCDIR) 
+	$(MAKE) clean -C $(SOURCEDIR)
 
-valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all ./src/main
+democlean:
+	$(MAKE) clean -C $(DEMODIR)
+
+demo:
+	$(MAKE) valgrind -C $(DEMODIR)
+

@@ -23,8 +23,8 @@ typedef struct foo{
 void link_destructor(obj o)
 {
   link_t *link = (link_t*)o;
-  release(link->next);
   release(link->data);
+  return release(link->next);
 }
 
 void list_destructor(obj o)
@@ -41,10 +41,10 @@ void test_list()
 
   list->first->data = strdup2("Test");
   retain(first);
-  
+
   link_t *current = first;
 
-  for (size_t i = 0; i < 2; i++) {
+  for (size_t i = 0; i < 3000000; i++) {
     link_t *link = allocate(sizeof(link_t), link_destructor);
     link->data   = strdup2("Test");
     retain(link);
@@ -53,7 +53,6 @@ void test_list()
     current       = link;
     list->last    = link;
   }
-
   retain(list);
   release(list);
 }
@@ -99,14 +98,11 @@ int main(int argc, char *argv[])
   test_list();
   printf("efter test_list\n");
 
-  for (int i = 0; i < 100; i++) {
-    printf("iteration nr: %d\n", i+1);
-    char * temp = strdup2("foo");
-    release(temp);
-  }
-
-
-
+  /** for (int i = 0; i < 100; i++) { */
+  /**   printf("iteration nr: %d\n", i+1); */
+  /**   char * temp = strdup2("foo"); */
+  /**   release(temp); */
+  /** } */
   printf("Innan cleanup.\n");
   cleanup();
   shutdown();

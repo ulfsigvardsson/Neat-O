@@ -14,7 +14,7 @@
  * Given a obj pointer @object and an object record pointer @record, calculates the total
  * amount of bytes contained by the object record.
  */
-#define CALCULATE_SIZE(object, record) sizeof(object_record_t)+sizeof(*object)*(record->array_length)
+#define CALCULATE_SIZE(object, record) sizeof(object_record_t)+(record->object_size)*(record->array_length)
 
 /**
  * @def OBJECT_TO_RECORD(object)
@@ -72,10 +72,11 @@ void cleanup_before_allocation(size_t bytes);
 struct object_record
 {
   function1_t destroy;        	/*!< Pointer to a destructor function */          // 8 bytes
-  object_record_t *next;  		/*!< Pointer to the next allocated object */ 	  // 8 bytes
+  object_record_t *next;  	/*!< Pointer to the next allocated object */ 	  // 8 bytes
   object_record_t *previous;  	/*!< Pointer to the previusly allocated object */ // 8 bytes
+  size_t object_size;
   rc_format ref_count;        	/*!< Reference count for the object */            // 2 bytes
-  short array_length;         	/*!< Array length for the object */               // 2 bytes
+  unsigned short array_length;  /*!< Array length for the object */               // 2 bytes
   // Total: 32 bytes
 };
 
@@ -258,8 +259,6 @@ void no_destructor(obj object)
  */
 obj allocate(size_t bytes, function1_t destructor)
 {
-  set_cascade_limit(CASCADE_LIMIT); //reset cascade limit to its original value.
-
   if (remaining_garbage)
     cleanup_before_allocation(bytes);
 
@@ -269,6 +268,7 @@ obj allocate(size_t bytes, function1_t destructor)
     return NULL;
 
   record->ref_count    = 0;
+  record->object_size  = bytes;
   record->array_length = 1;
   record->destroy      = destructor ? destructor : no_destructor;
   set_heap_pointers(record);
@@ -278,21 +278,13 @@ obj allocate(size_t bytes, function1_t destructor)
 
 void cleanup_before_allocation(size_t bytes)
 {
-  size_t released_memory = 0;
+  released_memory = 0;
 
-  while (remaining_garbage && (released_memory <= bytes || get_cascade_limit() > 0))
+  while (remaining_garbage && (released_memory <= bytes || get_cascade_limit() > released_memory))
     {
       obj object = RECORD_TO_OBJECT(remaining_garbage);
-
-      if (rc(object) <= 0)
-        {
-          size_t old_limit = CALCULATE_SIZE(object, remaining_garbage);
-          released_memory += old_limit;
-          size_t new_limit = get_cascade_limit()-old_limit;
-          deallocate(object);
-          set_cascade_limit(new_limit);
-        }
-
+      released_memory += CALCULATE_SIZE(object, remaining_garbage);
+      deallocate(object); 
     }
 }
 
@@ -309,9 +301,11 @@ obj allocate_array(size_t elements, size_t elem_size, function1_t destructor)
 {
   size_t total = elements * elem_size;
   obj object   = allocate(total, destructor);
-
+  object_record_t *record = OBJECT_TO_RECORD(object);
+  record->array_length = elements;
+  
   if(!object)
-    return NULL;
+      return NULL;
 
   return memset(object, 0, total); // Detta nollar alla bytes, från 'object' och 'total' bytes framåt
 }

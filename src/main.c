@@ -45,7 +45,7 @@ void test_list()
 
   link_t *current = first;
 
-  for (size_t i = 0; i < 1000000; i++) {
+  for (size_t i = 0; i < 100000; i++) {
     link_t *link = allocate(sizeof(link_t), link_destructor);
     link->data   = strdup2("Test");
     retain(link);
@@ -81,29 +81,32 @@ foo_t *test_foo(char *name)
   return foo;
 }
 
-char** test_array()
+int* test_array()
 {
-  char **array = (char**)allocate_array(2, sizeof(char*), NULL);
+  int *array = (int*)allocate_array(70000, sizeof(int*), NULL);
   retain(array);
-  array[0] = "Foo";
-  array[1] = "Bar";
-  for (int i= 0; i < 2; i++) {
-    printf("Array[%d]: %s\n", i, array[i]);
+  for (int i= 0; i < 70000; i++) {
+    array[i] = i;
   }
   return array;
 }
 
 int main(int argc, char *argv[])
 {
-  printf("innan test_list\n");
+  /* printf("innan test_list\n"); */
+  
+  /* printf("efter test_list\n"); */
+  int *arr = test_array();
   test_list();
-  printf("efter test_list\n");
-
-  for (int i = 0; i < 100; i++) {
-    printf("iteration nr: %d\n", i+1);
-    char * temp = strdup2("foo");
-    release(temp);
-  }
+  /* for (int i= 0; i < 70000; i++) { */
+  /*   printf("Array[%d]: %d\n", i, arr[i]); */
+  /* } */
+  release(arr);
+  /* for (int i = 0; i < 100; i++) { */
+  /*   printf("iteration nr: %d\n", i+1); */
+  /*   char * temp = strdup2("foo"); */
+  /*   release(temp); */
+  /* } */
   printf("Innan cleanup.\n");
   cleanup();
   shutdown();

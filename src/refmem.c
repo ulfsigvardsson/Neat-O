@@ -51,9 +51,9 @@ typedef struct object_record object_record_t;
  * =================================
  */
 
-static size_t cascade_limit = CASCADE_LIMIT;     /*!< The cascade limit with a default value. */
-static object_record_t *last_allocation   = NULL;  /*!< Pointer to the most recently allocated heap object with rc > 0*/
-static object_record_t *remaining_garbage = NULL;/*!< Pointer to the 'first' remaining heap object with rc == 0 */
+static size_t cascade_limit = CASCADE_LIMIT;      	/*!< The cascade limit with a default value. */
+static object_record_t *last_allocation   = NULL;  	/*!< Pointer to the most recently allocated heap object with rc > 0*/
+static object_record_t *remaining_garbage = NULL; 	/*!< Pointer to the 'first' remaining heap object with rc == 0 */
 
 /* =================================
  * -------STRUCTS & PROTOTYPES------

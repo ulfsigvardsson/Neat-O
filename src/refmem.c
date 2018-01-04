@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 /* =================================
  * -------------MACROS--------------
  * =================================
@@ -26,7 +27,7 @@
  * @def CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define CASCADE_LIMIT 1000
+#define CASCADE_LIMIT 1500000
 
 /* =================================
  * --------TYPE DEFINITIONS---------
@@ -64,12 +65,12 @@ void cleanup_before_allocation(size_t bytes);
  */
 struct object_record
 {
-  function1_t destroy;        	/*!< Pointer to a destructor function */          // 8 bytes
-  object_record_t *next;  	/*!< Pointer to the next allocated object */ 	  // 8 bytes
-  object_record_t *previous;  	/*!< Pointer to the previusly allocated object */ // 8 bytes
-  size_t size;                                                                    // 8 bytes
-  rc_format ref_count;        	/*!< Reference count for the object */            // 2 bytes
-  // Total: 40 bytes
+  function1_t destroy;        	/*!< Pointer to a destructor function */                            // 8 bytes
+  object_record_t *next;  	/*!< Pointer to the next allocated object */ 	                    // 8 bytes
+  object_record_t *previous;  	/*!< Pointer to the previusly allocated object */                   // 8 bytes
+  unsigned long size;           /*!< Number of bytes occupied by the object including meta data */  // 4 bytes
+  rc_format ref_count;        	/*!< Reference count for the object */                              // 4 bytes
+  // Total: 32 bytes
 };
 
 /* =================================
@@ -77,6 +78,10 @@ struct object_record
  * =================================
  */
 
+bool rc_overflow(obj object)
+{
+  return rc(object) == ULONG_MAX;
+}
 /**
  * Initializes the 'previous' pointer for a newly allocated object_record_t
  *
@@ -176,7 +181,8 @@ void retain(obj object)
 {
   if(object)
     {
-      object_record_t *record = OBJECT_TO_RECORD(object);
+      assert(!rc_overflow(object) && "Too many references to the same object. Shutting down application.");
+      object_record_t *record = OBJECT_TO_RECORD(object); 
       ++(record->ref_count);
     }
 }
@@ -193,7 +199,7 @@ void release(obj object)
     {
       object_record_t *record = OBJECT_TO_RECORD(object);
 
-      if (rc(object) > 1)
+      if (rc(object) > 0)
         --(record->ref_count);
 
       if (rc(object) == 0)
@@ -378,16 +384,15 @@ void cleanup()
  * Frees all remaining allocated heap objects regardless of reference count
  */
 void shutdown()
-  {
-    cleanup();
-    object_record_t *current = last_allocation;
+{
+  cleanup();
+  object_record_t *temp;
     
-    while (current)
-      {
-        object_record_t *temp = current;
-        current    = current->previous;
-        free(temp);
-      }
-
-  }
+  while (last_allocation)
+    {
+      temp = last_allocation;
+      last_allocation = last_allocation->previous;
+      free(temp);
+    }
+}
 

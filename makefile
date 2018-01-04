@@ -1,12 +1,16 @@
 SOURCEDIR = ./src
 DEMODIR = ./demo
+TESTDIR = ./test
 OBJECTDIR = ./obj
 BINARYDIR = ./bin
+
 CFLAGS = -g -Werror
+TESTFLAGS= -Wall -pg -fprofile-arcs -ftest-coverage -fPIC
+
 CC = gcc
 RM = -rm -f
 
-.PHONY: clean, demo
+.PHONY: democlean, srcclean, demo, test
 
 srcclean:
 	$(MAKE) clean -C $(SOURCEDIR)
@@ -17,3 +21,5 @@ democlean:
 demo:
 	$(MAKE) valgrind -C $(DEMODIR)
 
+test:
+	$(MAKE) test -C $(TESTDIR)

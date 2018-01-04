@@ -29,9 +29,6 @@ refmem.o: $(SRCDIR)refmem.c $(SRCDIR)refmem.h
 run : lager
 	./lager db.txt
 
-runtest: test
-	./test
-
 valgrind: lager
 	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./lager db.txt
  

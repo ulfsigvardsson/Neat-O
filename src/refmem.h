@@ -2,10 +2,11 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <limits.h>
 
 typedef void *obj;
 typedef void(*function1_t)(obj);
-typedef short rc_format;
+typedef unsigned long rc_format;
 
 void retain(obj);
 void release(obj);

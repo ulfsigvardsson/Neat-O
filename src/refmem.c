@@ -27,7 +27,7 @@
  * @def CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define CASCADE_LIMIT 1500000
+#define CASCADE_LIMIT 1200000
 
 /* =================================
  * --------TYPE DEFINITIONS---------
@@ -120,7 +120,7 @@ function1_t get_destructor(unsigned char index)
   return result->data;
 }
 
-link_t **list_find(list_t *list, obj data)
+link_t **find_link(list_t *list, obj data)
 {
   link_t **current = &(list->first);
 
@@ -173,21 +173,6 @@ bool rc_overflow(obj object)
 {
   return rc(object) == ULONG_MAX;
 }
-/**
- * Initializes the 'previous' pointer for a newly allocated object_record_t
- *
- * @param record The object record that was allocated
- */
-/* void set_heap_pointers(object_record_t *record) */
-/* { */
-/*   record->next 	 = NULL; */
-
-/*   if (last_allocation) */
-/*     last_allocation->next = record; */
-
-/*   record->previous = last_allocation; */
-/*   last_allocation  = record; */
-/* } */
 
 /**
  * Initializes the 'previous' pointer for a newly allocated object_record_t
@@ -197,12 +182,12 @@ bool rc_overflow(obj object)
 void set_garbage_pointers(object_record_t *record)
 {
   link_t *new = calloc(1, sizeof(link_t));
-  new->data = record;
+  new->data = record; 
   
   if (garbage->size == 0)
     {
-      garbage->last = new;
       garbage->first = new; 
+      garbage->last = new;
     }
   else
     {
@@ -210,7 +195,7 @@ void set_garbage_pointers(object_record_t *record)
       garbage->last = new;
     }
   
-  garbage->size++;
+  ++(garbage->size);
 }
 
 /**
@@ -220,44 +205,20 @@ void set_garbage_pointers(object_record_t *record)
  */
 void redirect_garbage_pointers(object_record_t *record)
 {
-  link_t **c = list_find(garbage, record);
+  link_t **c = find_link(garbage, record);
 
   if (*c)
     {
       link_t *temp = *c;
       *c = (*c)->next;
-      garbage->size--;
-      free_link(temp);  
+      
+      if (garbage->size == 1) 
+        garbage->last = NULL;
+
+      --(garbage->size);
+      free(temp);  
     }   
 }
-
-/**
- * Redirects pointers for an object to be deallocated.
- *
- * @param record The object record to be deallocated
- */
-/* void redirect_heap_pointers(object_record_t *record) */
-/* { */
-/*   if (record) */
-/*     { */
-/*       object_record_t *previous = record->previous; */
-/*       object_record_t *next     = record->next; */
-
-/*       if (!previous && !next) */
-/*         last_allocation = NULL; */
-
-/*       if(next) */
-/*         next->previous = previous; */
-
-/*       if(previous) */
-/*         previous->next = next; */
-
-/*       if (last_allocation == record) */
-/*         last_allocation = previous; */
-
-/*       set_garbage_pointers(record); */
-/*     } */
-/* } */
 
 /**
  * Increments an objects reference count by one
@@ -333,6 +294,7 @@ void initialize_garbage()
   link_t *first      = NULL;
   garbage->first = first;
   garbage->last  = first;
+  garbage->size = 0;
 }
 /**
  * Allocates space for an object on the heap together with additional meta data
@@ -386,6 +348,7 @@ void cleanup_before_allocation(size_t bytes)
     }
 
   garbage->first = current;
+
 }
 
 /**
@@ -477,7 +440,6 @@ size_t get_cascade_limit()
 
 /**
  * Frees all object whos reference count is 0, regardless of cascade limit
- * FIXME: remaining_garbage ändras inte!
  */
 void cleanup()
 {
@@ -485,14 +447,15 @@ void cleanup()
   
   link_t *remaining_garbage = garbage->first;
   link_t *temp;
+  
   while (remaining_garbage)
     {
-      temp=remaining_garbage;
-      remaining_garbage=remaining_garbage->next;
+      temp = remaining_garbage;
+      remaining_garbage = remaining_garbage->next;
       object_record_t *to_cleanup = temp->data;
-      obj object = RECORD_TO_OBJECT(to_cleanup); 
-      deallocate(object);
-
+      obj object = RECORD_TO_OBJECT(to_cleanup);
+      function1_t fun = get_destructor(to_cleanup->destr_index);
+      fun(object);
     }
 }
 
@@ -502,7 +465,7 @@ void cleanup()
 void shutdown()
 {
   cleanup(); 
+  free_list(garbage);
   free_list(destructors);
-  free_list(garbage); 
 }
 

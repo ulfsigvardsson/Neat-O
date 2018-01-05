@@ -45,7 +45,7 @@ void test_list()
 
   link_t *current = first;
 
-  for (size_t i = 0; i < 22000; i++) {
+  for (size_t i = 0; i < 100000; i++) {
     link_t *link = allocate(sizeof(link_t), link_destructor);
     link->data   = strdup2("Test");
     retain(link);
@@ -60,28 +60,6 @@ void test_list()
   printf("Cascade limit nådd\n");
 }
 
-void foo_destructor(obj o)
-{
-
-  foo_t *foo = (foo_t*)o;
-  printf("Record count för strängen: ");
-  release(foo->name);
-}
-
-  foo_t *new_foo(char *name)
-  {
-  foo_t *foo = allocate(sizeof(foo_t), foo_destructor);
-  foo->name = name;
-  retain(foo->name);
-  retain(foo);
-  return foo;
-}
-
-foo_t *test_foo(char *name)
-{
-  foo_t *foo = new_foo(name);
-  return foo;
-}
 
 int* test_array()
 {
@@ -106,16 +84,16 @@ int main(int argc, char *argv[])
     /*   printf("Array[%d]: %d\n", i, arr[i]); */
     /* } */
     /* release(arr); */
-    for (int i = 0; i < 1; i++) {
-      printf("iteration nr: %d\n", i+1);
-      char * temp = strdup2("foo");
-      release(temp);
-    }
+    /* for (int i = 0; i < 1; i++) { */
+    /*   printf("iteration nr: %d\n", i+1); */
+    /*   char * temp = strdup2("foo"); */
+    /*   release(temp); */
+    /* } */
     /* printf("Innan cleanup.\n"); */
-   //   cleanup();
-   shutdown();
+  //   cleanup();
+shutdown();
 
   
-   return 0;
+    return 0;
 }
 

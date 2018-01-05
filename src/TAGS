@@ -1,54 +1,68 @@
 
-main.c,504
+main.c,509
 typedef struct link7,100
-  obj data;9,122
-  struct link *next;next10,134
-}link_t;link_t11,155
-typedef struct list13,165
-  link_t *first;first15,187
-  link_t *last;last16,204
-}list_t;list_t17,220
-typedef struct foo{foo19,230
-  char *name;name20,250
-} foo_t;21,274
-void link_destructor(23,284
-void list_destructor(30,392
-void test_list(36,478
-void foo_destructor(62,1066
-  foo_t *new_foo(new_foo70,1190
-foo_t *test_foo(test_foo79,1352
-char** test_array(85,1429
-int main(97,1671
+  char *data;data9,122
+  struct link *next;next10,136
+}link_t;link_t11,157
+typedef struct list13,167
+  link_t *first;first15,189
+  link_t *last;last16,206
+}list_t;list_t17,222
+typedef struct foo{foo19,232
+  char *name;name20,252
+} foo_t;21,276
+void link_destructor(23,286
+void list_destructor(30,401
+void test_list(36,494
+void foo_destructor(63,1147
+  foo_t *new_foo(new_foo71,1271
+foo_t *test_foo(test_foo80,1433
+int* test_array(86,1510
+int main(96,1687
 
-refmem.c,1068
-#define CALCULATE_SIZE(17,404
-#define OBJECT_TO_RECORD(24,696
-#define RECORD_TO_OBJECT(30,949
-#define CASCADE_LIMIT 36,1097
-typedef struct object_record object_record_t;47,1277
-static size_t cascade_limit 54,1440
-static object_record_t *last_allocation last_allocation55,1537
-static object_record_t *remaining_garbage remaining_garbage56,1658
-struct object_record71,2143
-  function1_t destroy;73,2166
-  object_record_t *next;next74,2258
-  object_record_t *previous;previous75,2345
-  rc_format ref_count;76,2437
-  short array_length;77,2529
-void set_heap_pointers(91,2896
-void set_garbage_pointers(107,3237
-void redirect_garbage_pointers(123,3600
-void redirect_heap_pointers(137,3907
-void retain(164,4591
-void release(179,4952
-rc_format rc(207,5597
-void no_destructor(221,6013
-obj allocate(238,6505
-void cleanup_before_allocation(258,7009
-obj allocate_array(292,7879
-char *strdup2(strdup2309,8372
-void deallocate(334,8960
-void set_cascade_limit(353,9305
-size_t get_cascade_limit(366,9518
-void cleanup(374,9657
-void shutdown(393,9982
+refmem.c,1446
+#define OBJECT_TO_RECORD(18,406
+#define RECORD_TO_OBJECT(24,659
+#define CASCADE_LIMIT 30,807
+typedef struct object_record object_record_t;41,992
+typedef struct link link_t;42,1038
+typedef struct list list_t;43,1066
+static size_t cascade_limit 50,1211
+static size_t released_memory 53,1553
+static list_t *allocations allocations55,1685
+static list_t *garbage garbage56,1720
+static list_t *destructors destructors57,1755
+struct link66,1985
+  obj data;68,1999
+  link_t *next;next69,2011
+struct list72,2031
+  link_t *first;first74,2045
+  link_t *last;last75,2062
+  size_t size;76,2078
+struct object_record85,2303
+  unsigned long size;89,2544
+  rc_format ref_count;90,2655
+  unsigned char destr_index;91,2765
+void free_link(100,3011
+void free_list(109,3116
+function1_t get_destructor(119,3226
+link_t **list_find(list_find129,3415
+unsigned char add_to_destructors(144,3648
+void initialize_destructors(169,4117
+bool rc_overflow(178,4343
+void set_garbage_pointers(203,4946
+void redirect_garbage_pointers(219,5299
+void retain(262,6306
+void release(278,6776
+rc_format rc(306,7398
+void no_destructor(320,7814
+void initialize_garbage(325,7860
+obj allocate(344,8509
+void cleanup_before_allocation(366,9039
+obj allocate_array(389,9760
+char *strdup2(strdup2406,10256
+void deallocate(429,10752
+void set_cascade_limit(449,11162
+size_t get_cascade_limit(462,11375
+void cleanup(470,11514
+void shutdown(485,11844

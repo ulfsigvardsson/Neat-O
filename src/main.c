@@ -6,7 +6,7 @@
 
 typedef struct link
 {
-  obj data;
+  char *data;
   struct link *next;
 }link_t;
 
@@ -45,7 +45,7 @@ void test_list()
 
   link_t *current = first;
 
-  for (size_t i = 0; i < 500000; i++) {
+  for (size_t i = 0; i < 22000; i++) {
     link_t *link = allocate(sizeof(link_t), link_destructor);
     link->data   = strdup2("Test");
     retain(link);
@@ -99,22 +99,23 @@ int main(int argc, char *argv[])
   test_list();
   printf("efter test_list\n");
 
+  
   /* int *arr = test_array(); */
   
   /* for (int i= 0; i < 70000; i++) { */
-  /*   printf("Array[%d]: %d\n", i, arr[i]); */
-  /* } */
-  /* release(arr); */
-  for (int i = 0; i < 100; i++) {
-    printf("iteration nr: %d\n", i+1);
-    char * temp = strdup2("foo");
-    release(temp);
-  }
-  /* printf("Innan cleanup.\n"); */
-  cleanup();
-  /* shutdown(); */
+    /*   printf("Array[%d]: %d\n", i, arr[i]); */
+    /* } */
+    /* release(arr); */
+    for (int i = 0; i < 1; i++) {
+      printf("iteration nr: %d\n", i+1);
+      char * temp = strdup2("foo");
+      release(temp);
+    }
+    /* printf("Innan cleanup.\n"); */
+   //   cleanup();
+   shutdown();
 
   
-  return 0;
+   return 0;
 }
 

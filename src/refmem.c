@@ -39,6 +39,8 @@
  */
 
 typedef struct object_record object_record_t;
+typedef struct link link_t;
+typedef struct list list_t;
 
 /* =================================
  * --------STATIC VARIABLES---------
@@ -46,16 +48,29 @@ typedef struct object_record object_record_t;
  */
 
 static size_t cascade_limit = CASCADE_LIMIT;      	/*!< The cascade limit with a default value. */
-static object_record_t *last_allocation   = NULL;  	/*!< Pointer to the most recently allocated heap object with rc > 0*/
-static object_record_t *remaining_garbage = NULL; 	/*!< Pointer to the 'first' remaining heap object with rc == 0 */
 static size_t released_memory = 0;                      /*!< Global variable tracking number of released bytes of a given cycle */
-
+static list_t *garbage     = NULL;
+static list_t *destructors = NULL;
 /* =================================
  * -------STRUCTS & PROTOTYPES------
  * =================================
  */
 
 void cleanup_before_allocation(size_t bytes);
+void no_destructor(obj object);
+
+struct link
+{
+  obj data;
+  link_t *next;
+};
+
+struct list
+{
+  link_t *first;
+  link_t *last;
+  size_t size;
+};
 
 /**
  * @struct object_record
@@ -65,18 +80,94 @@ void cleanup_before_allocation(size_t bytes);
  */
 struct object_record
 {
-  function1_t destroy;        	/*!< Pointer to a destructor function */                            // 8 bytes
-  object_record_t *next;  	/*!< Pointer to the next allocated object */ 	                    // 8 bytes
-  object_record_t *previous;  	/*!< Pointer to the previusly allocated object */                   // 8 bytes
-  unsigned long size;           /*!< Number of bytes occupied by the object including meta data */  // 4 bytes
-  rc_format ref_count;        	/*!< Reference count for the object */                              // 4 bytes
-  // Total: 32 bytes
+  unsigned long size;           /*!< Number of bytes occupied by the object including meta data, max 4.294.967.295 */  // 4 bytes
+  rc_format ref_count;        	/*!< Reference count for the object, max 4.294.967.295 */                              // 4 bytes
+  unsigned char destr_index;    /*!< Pointer to a destructor function, max 255 */                                      // 1 bytes
+  // Total: 9 bytes
 };
 
 /* =================================
  * -----------FUNCTIONS------
  * =================================
  */
+
+void free_link(link_t *link)
+{
+  if (link)
+    {
+      free_link(link->next);
+      free(link);
+    }
+}
+
+void free_list(list_t *list)
+{
+  if (list)
+    {
+      free_link(list->first); 
+      free(list);
+    }
+  
+}
+
+function1_t get_destructor(unsigned char index)
+{
+  link_t *result = destructors->first;
+
+  for (unsigned short i = 0; i < index; i++)
+    result = result->next;
+
+  return result->data;
+}
+
+link_t **list_find(list_t *list, obj data)
+{
+  link_t **current = &(list->first);
+
+  while (*current)
+    {
+      if ((*current)->data == data) 
+        return current;
+
+      current = &(*current)->next;
+    }
+
+  return current;
+}
+
+unsigned char add_to_destructors(function1_t destructor)
+{
+  link_t **current = &(destructors->first);
+  int index = 0;
+
+  if (!destructor)
+    return index;
+  
+  while (*current)
+    {
+      if ((*current)->data == destructor) 
+        return index;
+
+      ++index;
+      current = &(*current)->next;
+    }
+
+  *current          = calloc(1, sizeof(link_t));
+  (*current)->data  = destructor;
+  destructors->last = *current;
+  ++(destructors->size);
+
+  return index;
+}
+
+void initialize_destructors()
+{
+  destructors        = calloc(1, sizeof(list_t));
+  link_t *first      = calloc(1, sizeof(link_t));
+  first->data = no_destructor;
+  destructors->first = first;
+  destructors->last  = first;
+}
 
 bool rc_overflow(obj object)
 {
@@ -87,16 +178,16 @@ bool rc_overflow(obj object)
  *
  * @param record The object record that was allocated
  */
-void set_heap_pointers(object_record_t *record)
-{
-  record->next 	 = NULL;
+/* void set_heap_pointers(object_record_t *record) */
+/* { */
+/*   record->next 	 = NULL; */
 
-  if (last_allocation)
-    last_allocation->next = record;
+/*   if (last_allocation) */
+/*     last_allocation->next = record; */
 
-  record->previous = last_allocation;
-  last_allocation  = record;
-}
+/*   record->previous = last_allocation; */
+/*   last_allocation  = record; */
+/* } */
 
 /**
  * Initializes the 'previous' pointer for a newly allocated object_record_t
@@ -105,16 +196,21 @@ void set_heap_pointers(object_record_t *record)
  */
 void set_garbage_pointers(object_record_t *record)
 {
-  if(record)
+  link_t *new = calloc(1, sizeof(link_t));
+  new->data = record;
+  
+  if (garbage->size == 0)
     {
-      record->previous = remaining_garbage;
-      record->next     = NULL;
-
-      if (remaining_garbage)
-        remaining_garbage->next = record;
-
-      remaining_garbage  = record;
+      garbage->last = new;
+      garbage->first = new; 
     }
+  else
+    {
+      garbage->last->next = new;
+      garbage->last = new;
+    }
+  
+  garbage->size++;
 }
 
 /**
@@ -124,24 +220,15 @@ void set_garbage_pointers(object_record_t *record)
  */
 void redirect_garbage_pointers(object_record_t *record)
 {
-  if (record)
+  link_t **c = list_find(garbage, record);
+
+  if (*c)
     {
-      object_record_t *previous = record->previous;
-      object_record_t *next     = record->next;
-
-      if (!previous && !next)
-        remaining_garbage = NULL;
-
-      if(next)
-        next->previous = previous;
-
-      if(previous)
-        previous->next = next;
-
-      if(remaining_garbage == record)
-        remaining_garbage = previous;
-    }
-
+      link_t *temp = *c;
+      *c = (*c)->next;
+      garbage->size--;
+      free_link(temp);  
+    }   
 }
 
 /**
@@ -149,28 +236,28 @@ void redirect_garbage_pointers(object_record_t *record)
  *
  * @param record The object record to be deallocated
  */
-void redirect_heap_pointers(object_record_t *record)
-{
-  if (record)
-    {
-      object_record_t *previous = record->previous;
-      object_record_t *next     = record->next;
+/* void redirect_heap_pointers(object_record_t *record) */
+/* { */
+/*   if (record) */
+/*     { */
+/*       object_record_t *previous = record->previous; */
+/*       object_record_t *next     = record->next; */
 
-      if (!previous && !next)
-        last_allocation = NULL;
+/*       if (!previous && !next) */
+/*         last_allocation = NULL; */
 
-      if(next)
-        next->previous = previous;
+/*       if(next) */
+/*         next->previous = previous; */
 
-      if(previous)
-        previous->next = next;
+/*       if(previous) */
+/*         previous->next = next; */
 
-      if (last_allocation == record)
-        last_allocation = previous;
+/*       if (last_allocation == record) */
+/*         last_allocation = previous; */
 
-      set_garbage_pointers(record);
-    }
-}
+/*       set_garbage_pointers(record); */
+/*     } */
+/* } */
 
 /**
  * Increments an objects reference count by one
@@ -204,7 +291,7 @@ void release(obj object)
 
       if (rc(object) == 0)
         {
-          redirect_heap_pointers(record);
+          set_garbage_pointers(record);
 
           if(get_cascade_limit() > released_memory)
             {
@@ -240,7 +327,13 @@ void no_destructor(obj object)
   return;
 }
 
-
+void initialize_garbage()
+{
+  garbage            = calloc(1, sizeof(list_t));
+  link_t *first      = NULL;
+  garbage->first = first;
+  garbage->last  = first;
+}
 /**
  * Allocates space for an object on the heap together with additional meta data
  * consisting of reference count and a pointer to a destructor function.
@@ -254,31 +347,45 @@ void no_destructor(obj object)
  */
 obj allocate(size_t bytes, function1_t destructor)
 {
-  if (remaining_garbage)
-    cleanup_before_allocation(bytes);
+  if (!garbage) 
+    initialize_garbage(); 
 
+
+  if (garbage->size > 0)
+    {
+      cleanup_before_allocation(bytes);
+    }
+
+  if (!destructors)
+    initialize_destructors();
+  
   object_record_t *record = (object_record_t*) malloc(sizeof(*record) + bytes);
 
   if (!record)
     return NULL;
 
-  record->ref_count = 0; 
-  record->destroy   = destructor ? destructor : no_destructor;
+  record->ref_count = 0;
+  record->destr_index = add_to_destructors(destructor); 
   record->size      = sizeof(object_record_t) + bytes;
-  set_heap_pointers(record); 
   return RECORD_TO_OBJECT(record);
 }
 
 void cleanup_before_allocation(size_t bytes)
 {
+  assert(garbage);
   released_memory = 0;
-
-  while (remaining_garbage && (released_memory <= bytes || get_cascade_limit() > released_memory))
+  link_t *current = garbage->first;
+  
+  while (current && (released_memory <= bytes || get_cascade_limit() > released_memory))
     {
-      obj object = RECORD_TO_OBJECT(remaining_garbage);
-      released_memory += remaining_garbage->size;
+      object_record_t *record = current->data;
+      current = current->next;
+      obj object = RECORD_TO_OBJECT(record);
+      released_memory += record->size;
       deallocate(object); 
     }
+
+  garbage->first = current;
 }
 
 /**
@@ -318,7 +425,6 @@ char *strdup2(char *org)
   if (!result)
     return NULL;
 
-  object_record_t *record = OBJECT_TO_RECORD(result); 
   strcpy(result, org);
   retain(result);
 
@@ -339,7 +445,8 @@ void deallocate(obj object)
 
   assert(rc(object) == 0);
   redirect_garbage_pointers(record);
-  record->destroy(object);
+  function1_t destructor = get_destructor(record->destr_index);
+  destructor(object);
   free(record);
 
 }
@@ -370,13 +477,22 @@ size_t get_cascade_limit()
 
 /**
  * Frees all object whos reference count is 0, regardless of cascade limit
+ * FIXME: remaining_garbage ändras inte!
  */
 void cleanup()
 {
+  assert(garbage);
+  
+  link_t *remaining_garbage = garbage->first;
+  link_t *temp;
   while (remaining_garbage)
     {
-      obj object = RECORD_TO_OBJECT(remaining_garbage); 
+      temp=remaining_garbage;
+      remaining_garbage=remaining_garbage->next;
+      object_record_t *to_cleanup = temp->data;
+      obj object = RECORD_TO_OBJECT(to_cleanup); 
       deallocate(object);
+
     }
 }
 
@@ -385,14 +501,8 @@ void cleanup()
  */
 void shutdown()
 {
-  cleanup();
-  object_record_t *temp;
-    
-  while (last_allocation)
-    {
-      temp = last_allocation;
-      last_allocation = last_allocation->previous;
-      free(temp);
-    }
+  cleanup(); 
+  free_list(destructors);
+  free_list(garbage); 
 }
 

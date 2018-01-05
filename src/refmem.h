@@ -19,3 +19,11 @@ size_t get_cascade_limit();
 void cleanup();
 void shutdown();
 char *strdup2(char*);
+
+
+
+
+
+
+
+

@@ -106,10 +106,10 @@ void free_list(list_t *list)
 {
   if (list)
     {
-      free_link(list->first); 
+      free_link(list->first);
       free(list);
     }
-  
+
 }
 
 function1_t get_destructor(unsigned char index)
@@ -119,7 +119,7 @@ function1_t get_destructor(unsigned char index)
   for (unsigned short i = 0; i < index; i++)
     result = result->next;
 
-  return result->data;
+  return (function1_t)result->data;
 }
 
 link_t **find_link(list_t *list, obj data)
@@ -128,7 +128,7 @@ link_t **find_link(list_t *list, obj data)
 
   while (*current)
     {
-      if ((*current)->data == data) 
+      if ((*current)->data == data)
         return current;
 
       current = &(*current)->next;
@@ -144,18 +144,18 @@ unsigned char add_to_destructors(function1_t destructor)
 
   if (!destructor)
     return index;
-  
+
   while (*current)
     {
-      if ((*current)->data == destructor) 
+      if ((*current)->data == destructor)
         return index;
 
       ++index;
       current = &(*current)->next;
     }
 
-  *current          = calloc(1, sizeof(link_t));
-  (*current)->data  = destructor;
+  *current          = (link_t*)calloc(1, sizeof(link_t));
+  (*current)->data  = (function1_t*)destructor;
   destructors->last = *current;
   ++(destructors->size);
 
@@ -164,9 +164,9 @@ unsigned char add_to_destructors(function1_t destructor)
 
 void initialize_destructors()
 {
-  destructors        = calloc(1, sizeof(list_t));
-  link_t *first      = calloc(1, sizeof(link_t));
-  first->data = no_destructor;
+  destructors        = (list_t*)calloc(1, sizeof(list_t));
+  link_t *first      = (link_t*)calloc(1, sizeof(link_t));
+  first->data = (obj)no_destructor;
   destructors->first = first;
   destructors->last  = first;
 }
@@ -183,20 +183,20 @@ bool rc_overflow(obj object)
  */
 void set_garbage_pointers(object_record_t *record)
 {
-  link_t *new = calloc(1, sizeof(link_t));
-  new->data = record; 
-  
+  link_t *new_point = (link_t*)calloc(1, sizeof(link_t));
+  new_point->data = record;
+
   if (garbage->size == 0)
     {
-      garbage->first = new; 
-      garbage->last = new;
+      garbage->first = new_point;
+      garbage->last = new_point;
     }
   else
     {
-      garbage->last->next = new;
-      garbage->last = new;
+      garbage->last->next = new_point;
+      garbage->last = new_point;
     }
-  
+
   ++(garbage->size);
 }
 
@@ -218,11 +218,10 @@ void redirect_garbage_pointers(object_record_t *record)
         {
           garbage->last = NULL;
           garbage->first = NULL;
-        }
-      
+        } 
       --(garbage->size);
-      free(temp);  
-    }   
+      free(temp);
+    }
 }
 
 /**
@@ -235,7 +234,7 @@ void retain(obj object)
   if(object)
     {
       assert(!rc_overflow(object) && "Too many references to the same object. Shutting down application.");
-      object_record_t *record = OBJECT_TO_RECORD(object); 
+      object_record_t *record = OBJECT_TO_RECORD(object);
       ++(record->ref_count);
     }
 }
@@ -298,7 +297,7 @@ void no_destructor(obj object)
 
 void initialize_garbage()
 {
-  garbage            = calloc(1, sizeof(list_t));
+  garbage            = (list_t*)calloc(1, sizeof(list_t));
   link_t *first      = NULL;
   garbage->first = first;
   garbage->last  = first;
@@ -322,7 +321,6 @@ obj allocate(size_t bytes, function1_t destructor)
   if (!garbage) 
     initialize_garbage(); 
 
-
   if (garbage->size > 0)
     {
       cleanup_before_allocation(bytes);
@@ -330,14 +328,14 @@ obj allocate(size_t bytes, function1_t destructor)
 
   if (!destructors)
     initialize_destructors();
-  
+
   object_record_t *record = (object_record_t*) malloc(sizeof(*record) + bytes);
 
   if (!record)
     return NULL;
 
   record->ref_count = 0;
-  record->destr_index = add_to_destructors(destructor); 
+  record->destr_index = add_to_destructors(destructor);
   record->size      = sizeof(object_record_t) + bytes;
   return RECORD_TO_OBJECT(record);
 }
@@ -347,14 +345,14 @@ void cleanup_before_allocation(size_t bytes)
   assert(garbage);
   released_memory = 0;
   link_t *current = garbage->first;
-  
+
   while (current && (released_memory <= bytes || get_cascade_limit() > released_memory))
     {
-      object_record_t *record = current->data;
+      object_record_t *record = (object_record_t*)current->data;
       current = current->next;
       obj object = RECORD_TO_OBJECT(record);
       released_memory += record->size;
-      deallocate(object); 
+      deallocate(object);
     }
 
   garbage->first = current;
@@ -373,8 +371,8 @@ void cleanup_before_allocation(size_t bytes)
 obj allocate_array(size_t elements, size_t elem_size, function1_t destructor)
 {
   size_t total = elements * elem_size;
-  obj object   = allocate(total, destructor); 
-  
+  obj object   = allocate(total, destructor);
+
   if(!object)
     return NULL;
 
@@ -455,15 +453,15 @@ void cleanup()
 {
   ignore_cascade_limit = true;
   assert(garbage);
-  
+
   link_t *remaining_garbage = garbage->first;
   link_t *temp;
-  
+
   while (remaining_garbage)
     {
       temp = remaining_garbage;
       remaining_garbage = remaining_garbage->next;
-      object_record_t *to_cleanup = temp->data;
+      object_record_t *to_cleanup = (object_record_t*)temp->data;
       obj object = RECORD_TO_OBJECT(to_cleanup);
       function1_t fun = get_destructor(to_cleanup->destr_index);
       fun(object);

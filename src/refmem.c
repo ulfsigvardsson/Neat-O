@@ -27,7 +27,7 @@
  * @def CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define CASCADE_LIMIT 2500000
+#define CASCADE_LIMIT 500000
 
 /* =================================
  * --------TYPE DEFINITIONS---------
@@ -106,7 +106,7 @@ void free_list(list_t *list)
 {
   if (list)
     {
-      free_link(list->first);
+      free_link(list->first); 
       free(list);
     }
 
@@ -169,6 +169,7 @@ void initialize_destructors()
   first->data = (obj)no_destructor;
   destructors->first = first;
   destructors->last  = first;
+  destructors->size = 1;
 }
 
 bool rc_overflow(obj object)
@@ -218,7 +219,8 @@ void redirect_garbage_pointers(object_record_t *record)
         {
           garbage->last = NULL;
           garbage->first = NULL;
-        } 
+        }
+      
       --(garbage->size);
       free(temp);
     }
@@ -340,6 +342,7 @@ obj allocate(size_t bytes, function1_t destructor)
   return RECORD_TO_OBJECT(record);
 }
 
+//TODO: Pekar om fel här om vi inte hinner städa upp allt.
 void cleanup_before_allocation(size_t bytes)
 {
   assert(garbage);
@@ -355,8 +358,7 @@ void cleanup_before_allocation(size_t bytes)
       deallocate(object);
     }
 
-  garbage->first = current;
-
+  //  garbage->first = current; 
 }
 
 /**
@@ -464,9 +466,9 @@ void cleanup()
       object_record_t *to_cleanup = (object_record_t*)temp->data;
       obj object = RECORD_TO_OBJECT(to_cleanup);
       function1_t fun = get_destructor(to_cleanup->destr_index);
+      redirect_garbage_pointers(to_cleanup);
       fun(object);
-      free(to_cleanup);
-      free(temp);
+      free(to_cleanup); 
     }
 }
 
@@ -477,7 +479,6 @@ void shutdown()
 {
   cleanup(); 
   free(garbage);
-  printf("Antal destruktorer: %zd\n", destructors->size);
   free_list(destructors);
 }
 

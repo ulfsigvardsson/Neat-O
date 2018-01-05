@@ -27,7 +27,7 @@
  * @def CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define CASCADE_LIMIT 1200000
+#define CASCADE_LIMIT 2500000
 
 /* =================================
  * --------TYPE DEFINITIONS---------
@@ -51,6 +51,8 @@ static size_t cascade_limit = CASCADE_LIMIT;      	/*!< The cascade limit with a
 static size_t released_memory = 0;                      /*!< Global variable tracking number of released bytes of a given cycle */
 static list_t *garbage     = NULL;
 static list_t *destructors = NULL;
+static bool ignore_cascade_limit = false;
+
 /* =================================
  * -------STRUCTS & PROTOTYPES------
  * =================================
@@ -212,9 +214,12 @@ void redirect_garbage_pointers(object_record_t *record)
       link_t *temp = *c;
       *c = (*c)->next;
       
-      if (garbage->size == 1) 
-        garbage->last = NULL;
-
+      if (garbage->size == 1)
+        {
+          garbage->last = NULL;
+          garbage->first = NULL;
+        }
+      
       --(garbage->size);
       free(temp);  
     }   
@@ -252,12 +257,15 @@ void release(obj object)
 
       if (rc(object) == 0)
         {
-          set_garbage_pointers(record);
-
-          if(get_cascade_limit() > released_memory)
+          
+          if(get_cascade_limit() > released_memory || (ignore_cascade_limit))
             {
-              released_memory += record->size;
+              released_memory += record->size; 
               deallocate(object);
+            }
+          else
+            {
+              set_garbage_pointers(record);
             }
         }
     }
@@ -309,6 +317,8 @@ void initialize_garbage()
  */
 obj allocate(size_t bytes, function1_t destructor)
 {
+  ignore_cascade_limit = false;
+  
   if (!garbage) 
     initialize_garbage(); 
 
@@ -443,6 +453,7 @@ size_t get_cascade_limit()
  */
 void cleanup()
 {
+  ignore_cascade_limit = true;
   assert(garbage);
   
   link_t *remaining_garbage = garbage->first;
@@ -456,6 +467,8 @@ void cleanup()
       obj object = RECORD_TO_OBJECT(to_cleanup);
       function1_t fun = get_destructor(to_cleanup->destr_index);
       fun(object);
+      free(to_cleanup);
+      free(temp);
     }
 }
 
@@ -465,7 +478,8 @@ void cleanup()
 void shutdown()
 {
   cleanup(); 
-  free_list(garbage);
+  free(garbage);
+  printf("Antal destruktorer: %zd\n", destructors->size);
   free_list(destructors);
 }
 

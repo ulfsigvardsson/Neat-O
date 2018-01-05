@@ -74,8 +74,8 @@ int* test_array()
 int main(int argc, char *argv[])
 {
   printf("innan test_list\n");
-  test_list();
-  printf("efter test_list\n");
+    test_list();
+    printf("efter test_list\n");
 
   
   /* int *arr = test_array(); */
@@ -84,11 +84,11 @@ int main(int argc, char *argv[])
     /*   printf("Array[%d]: %d\n", i, arr[i]); */
     /* } */
     /* release(arr); */
-    /* for (int i = 0; i < 1; i++) { */
-    /*   printf("iteration nr: %d\n", i+1); */
-    /*   char * temp = strdup2("foo"); */
-    /*   release(temp); */
-    /* } */
+    for (int i = 0; i < 100; i++) {
+      printf("iteration nr: %d\n", i+1);
+      char * temp = strdup2("foo");
+      release(temp);
+    }
     /* printf("Innan cleanup.\n"); */
   //   cleanup();
 shutdown();

@@ -1,0 +1,10 @@
+STRDUP VS. STRDUP2.
+Sträng: "testare"
+
+Objekt  Allokeringar malloc     Allokeringar allocate   Bytes malloc    Bytes allocate  %
+1       1                       5                       8               1104            138
+2       2                       6                       16              1120            70
+100     100                     104                     800             2688            3.36
+10000   10000                   10007                   80000           161136          2.01
+100000  100000                  100035                  800000          1601584         2.00198
+

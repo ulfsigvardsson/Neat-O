@@ -45,7 +45,7 @@ void test_list()
 
   link_t *current = first;
 
-  for (size_t i = 0; i < 500000; i++) {
+  for (size_t i = 0; i < 100000; i++) {
     link_t *link = allocate(sizeof(link_t), link_destructor);
     link->data   = strdup2("Test");
     retain(link);
@@ -77,20 +77,19 @@ int main(int argc, char *argv[])
     printf("efter test_list\n");
 
   
-  /* int *arr = test_array(); */
+  int *arr = test_array();
   
-  /* for (int i= 0; i < 70000; i++) { */
-    /*   printf("Array[%d]: %d\n", i, arr[i]); */
-    /* } */
-    /* release(arr); */
-    for (int i = 0; i < 100; i++) {
-      printf("iteration nr: %d\n", i+1);
-      char * temp = strdup2("foo"); 
-      release(temp);
-    }
-    
-    printf("Innan cleanup.\n");
-    cleanup();
+  for (int i= 0; i < 70000; i++) {
+    printf("Array[%d]: %d\n", i, arr[i]);
+  }
+  for (int i = 0; i < 100; i++) {
+    printf("iteration nr: %d\n", i+1);
+    char * temp = strdup2("foo"); 
+    release(temp);
+  }
+  release(arr); 
+  printf("Innan cleanup.\n");
+  cleanup();
      shutdown();
 
   

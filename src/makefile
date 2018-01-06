@@ -18,5 +18,6 @@ clean:
 	$(RM) *.o
 	$(RM) *.*~
 	$(RM) *^#*
+	$(RM) main
 
 .PHONY: clean

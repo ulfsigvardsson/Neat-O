@@ -9,7 +9,8 @@
  * -------------MACROS--------------
  * =================================
  */
-
+#define ALLOCATION_SPACE_REQUIRED released_memory < bytes
+#define BELOW_CASCADE_LIMIT get_cascade_limit() > released_memory
 /**
  * @def OBJECT_TO_RECORD(object)
  * Given a pointer @object, steps back in memory the size of the object_record struct
@@ -27,7 +28,7 @@
  * @def CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define CASCADE_LIMIT 500000
+#define CASCADE_LIMIT 50000
 
 /* =================================
  * --------TYPE DEFINITIONS---------
@@ -55,27 +56,8 @@ static bool ignore_cascade_limit = false;         /*!< Global bool variable for 
  */
 
 void no_destructor(obj object);
-function1_t get_destructor(unsigned char index);
-link_t **find_link(list_t *list, obj data);
-unsigned char add_to_destructors(function1_t destructor);
-void initialize_destructors();
-bool rc_overflow(obj object);
-void set_garbage_pointers(object_record_t *record);
-void redirect_garbage_pointers(object_record_t *record);
-void retain(obj object);
-void release(obj object);
-rc_format rc(obj object);
-void no_destructor(obj object);
-void initialize_garbage();
-obj allocate(size_t bytes, function1_t destructor);
 void cleanup_before_allocation(size_t bytes);
-obj allocate_array(size_t elements, size_t elem_size, function1_t destructor);
-char *strdup2(char *org);
-void deallocate(obj object);
-void set_cascade_limit(size_t limit);
-size_t get_cascade_limit();
-void cleanup();
-void shutdown();
+
 
 /**
  * @struct link
@@ -94,7 +76,7 @@ struct link
 struct list
 {
   link_t *first;
-  link_t *last;
+  link_t *last; 
   size_t size;
 };
 
@@ -106,10 +88,10 @@ struct list
  */
 struct object_record
 {
-  unsigned int size;           /*!< Number of bytes occupied by the object including meta data. */   // 4 bytes
-  rc_format ref_count;        	/*!< Reference count for the object. */                              // 4 bytes
-  unsigned char destr_index;    /*!< Pointer to a destructor function. */                            // 1 bytes
-  // Total: 12 bytes
+  unsigned int size;         /*!< Number of bytes occupied by the object including meta data. */  // 2 bytes
+  rc_format ref_count;       /*!< Reference count for the object. */                              // 2 bytes
+  unsigned char destr_index; /*!< Pointer to a destructor function. */                            // 1 bytes
+  // Total: 8 bytes
 };
 
 /* =================================
@@ -208,7 +190,7 @@ unsigned char add_to_destructors(function1_t destructor)
       ++index;
       current = &(*current)->next;
     }
-
+  
   *current          = (link_t*)calloc(1, sizeof(link_t));
   (*current)->data  = (function1_t*)destructor;
   destructors->last = *current;
@@ -222,7 +204,7 @@ unsigned char add_to_destructors(function1_t destructor)
  */
 void initialize_destructors()
 {
-  destructors        = (list_t*)calloc(1, sizeof(list_t));
+  destructors        = (list_t*)calloc(1, sizeof(list_t)); 
   link_t *first      = (link_t*)calloc(1, sizeof(link_t));
 
   first->data        = (obj)no_destructor;
@@ -402,9 +384,7 @@ obj allocate(size_t bytes, function1_t destructor)
 
   if (!destructors)
     initialize_destructors();
-  /* printf("size of unsigned int: %zd\n", sizeof(unsigned int)); */
-  /* printf("size of unsigned char: %zd\n", sizeof(unsigned char)); */
-  /* printf("size of object record: %zd\n", sizeof(object_record_t)); */
+  
   object_record_t *record = (object_record_t*) malloc(sizeof(object_record_t) + bytes);
 
   if (!record)
@@ -429,7 +409,7 @@ void cleanup_before_allocation(size_t bytes)
   released_memory = 0;
   link_t *current = garbage->first;
 
-  while (current && (released_memory <= bytes || get_cascade_limit() > released_memory))
+  while (current && (ALLOCATION_SPACE_REQUIRED || BELOW_CASCADE_LIMIT))
     {
       object_record_t *record = (object_record_t*)current->data;
       current          = current->next;
@@ -495,7 +475,7 @@ void deallocate(obj object)
   object_record_t *record = OBJECT_TO_RECORD(object);
 
   assert(rc(object) == 0);
-  redirect_garbage_pointers(record);
+  redirect_garbage_pointers(record); //
   function1_t destructor = get_destructor(record->destr_index);
   destructor(object);
   free(record);
@@ -533,18 +513,17 @@ void cleanup()
   ignore_cascade_limit = true;
   assert(garbage);
 
-  link_t *remaining_garbage = garbage->first;
-  link_t *temp;
+  link_t *remaining_garbage = garbage->first; 
 
   while (remaining_garbage)
     {
-      temp = remaining_garbage;
-      remaining_garbage = remaining_garbage->next;
-      object_record_t *to_cleanup = (object_record_t*)temp->data;
-      obj object = RECORD_TO_OBJECT(to_cleanup);
-      function1_t fun = get_destructor(to_cleanup->destr_index);
+      object_record_t *to_cleanup = (object_record_t*)remaining_garbage->data;
+      remaining_garbage           = remaining_garbage->next;
+      obj object                  = RECORD_TO_OBJECT(to_cleanup);
+      function1_t destructor      = get_destructor(to_cleanup->destr_index);
+
       redirect_garbage_pointers(to_cleanup);
-      fun(object);
+      destructor(object);
       free(to_cleanup); 
     }
 }

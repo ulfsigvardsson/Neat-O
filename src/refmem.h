@@ -6,7 +6,8 @@
 
 typedef void *obj;
 typedef void(*function1_t)(obj);
-typedef unsigned long rc_format;
+typedef unsigned short rc_format;
+typedef unsigned short size_format;
 
 void retain(obj);
 void release(obj);

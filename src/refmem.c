@@ -34,39 +34,63 @@
  * =================================
  */
 
-/**
- *  @typedef object_record_t
- */
-
-typedef struct object_record object_record_t;
-typedef struct link link_t;
-typedef struct list list_t;
+typedef struct object_record object_record_t; /*!< @typedef object_record_t*/
+typedef struct link link_t;                   /*!< @typedef link__t*/
+typedef struct list list_t;                   /*!< @typedef list_t*/
 
 /* =================================
  * --------STATIC VARIABLES---------
  * =================================
  */
 
-static size_t cascade_limit = CASCADE_LIMIT;      	/*!< The cascade limit with a default value. */
-static size_t released_memory = 0;                      /*!< Global variable tracking number of released bytes of a given cycle */
-static list_t *garbage     = NULL;
-static list_t *destructors = NULL;
-static bool ignore_cascade_limit = false;
+static size_t cascade_limit      = CASCADE_LIMIT; /*!< The cascade limit with a default value. */
+static size_t released_memory    = 0;             /*!< Global variable tracking number of released bytes of a given cycle. */
+static list_t *garbage           = NULL;          /*!< List containing all dangling garbage objects. */
+static list_t *destructors       = NULL;          /*!< List containing all destructor functions */
+static bool ignore_cascade_limit = false;         /*!< Global bool variable for bypassing the cascade limit in @see cleanup*/
 
 /* =================================
  * -------STRUCTS & PROTOTYPES------
  * =================================
  */
 
-void cleanup_before_allocation(size_t bytes);
 void no_destructor(obj object);
+function1_t get_destructor(unsigned char index);
+link_t **find_link(list_t *list, obj data);
+unsigned char add_to_destructors(function1_t destructor);
+void initialize_destructors();
+bool rc_overflow(obj object);
+void set_garbage_pointers(object_record_t *record);
+void redirect_garbage_pointers(object_record_t *record);
+void retain(obj object);
+void release(obj object);
+rc_format rc(obj object);
+void no_destructor(obj object);
+void initialize_garbage();
+obj allocate(size_t bytes, function1_t destructor);
+void cleanup_before_allocation(size_t bytes);
+obj allocate_array(size_t elements, size_t elem_size, function1_t destructor);
+char *strdup2(char *org);
+void deallocate(obj object);
+void set_cascade_limit(size_t limit);
+size_t get_cascade_limit();
+void cleanup();
+void shutdown();
 
+/**
+ * @struct link
+ * The link struct represents a link in a linked list.
+ */
 struct link
 {
   obj data;
   link_t *next;
 };
 
+/**
+ * @struct list
+ * The list struct is a standard linked list composed of @see link_t links.
+ */
 struct list
 {
   link_t *first;
@@ -76,16 +100,16 @@ struct list
 
 /**
  * @struct object_record
- * The object_record struct contains meta data consisting of the
- * current amount of references to a heap object along with a function pointer
- * to a destructor function.
+ * The object_record struct contains meta data consisting of the current amount of references 
+ * to a heap object along with an index number corresponding to a destructor function 
+ * in the @see destructors list.
  */
 struct object_record
 {
-  unsigned long size;           /*!< Number of bytes occupied by the object including meta data, max 4.294.967.295 */  // 4 bytes
-  rc_format ref_count;        	/*!< Reference count for the object, max 4.294.967.295 */                              // 4 bytes
-  unsigned char destr_index;    /*!< Pointer to a destructor function, max 255 */                                      // 1 bytes
-  // Total: 9 bytes
+  unsigned int size;           /*!< Number of bytes occupied by the object including meta data. */   // 4 bytes
+  rc_format ref_count;        	/*!< Reference count for the object. */                              // 4 bytes
+  unsigned char destr_index;    /*!< Pointer to a destructor function. */                            // 1 bytes
+  // Total: 12 bytes
 };
 
 /* =================================
@@ -93,6 +117,12 @@ struct object_record
  * =================================
  */
 
+/**
+ * Frees a links next pointer and then the link itself.
+ * @warning this function does not free the @see data struct member.
+ *
+ * @param link The link to free
+ */
 void free_link(link_t *link)
 {
   if (link)
@@ -102,6 +132,12 @@ void free_link(link_t *link)
     }
 }
 
+/**
+ * Frees a links next pointer and then the link itself.
+ * @warning this function does not free the @see data struct member.
+ *
+ * @param link The link to free
+ */
 void free_list(list_t *list)
 {
   if (list)
@@ -109,9 +145,14 @@ void free_list(list_t *list)
       free_link(list->first); 
       free(list);
     }
-
 }
 
+/**
+ * Finds the destructor function positioned at a given index in @see destructors.
+ *
+ * @param index Index to retrieve
+ * @return function1_t The destructor function at the given index
+ */
 function1_t get_destructor(unsigned char index)
 {
   link_t *result = destructors->first;
@@ -122,6 +163,13 @@ function1_t get_destructor(unsigned char index)
   return (function1_t)result->data;
 }
 
+/**
+ * Finds and returns a double pointer to the link containing a given element.
+ *
+ * @param list A list to search
+ * @param data A pointer to locate.
+ * @return link_t** A double pointer to link containing data, if present, otherwise NULL.
+ */
 link_t **find_link(list_t *list, obj data)
 {
   link_t **current = &(list->first);
@@ -137,10 +185,17 @@ link_t **find_link(list_t *list, obj data)
   return current;
 }
 
+/**
+ * Adds a destructor function to @see destructors if not already present 
+ * and returns its index in the list.
+ *
+ * @param destructor A destructor function
+ * @return unsigned char Index of destructor in list.
+ */
 unsigned char add_to_destructors(function1_t destructor)
 {
   link_t **current = &(destructors->first);
-  int index = 0;
+  int index        = 0;
 
   if (!destructor)
     return index;
@@ -162,40 +217,52 @@ unsigned char add_to_destructors(function1_t destructor)
   return index;
 }
 
+/**
+ * Initializes @see destructors to contain @see no_destructor as its only element.
+ */
 void initialize_destructors()
 {
   destructors        = (list_t*)calloc(1, sizeof(list_t));
   link_t *first      = (link_t*)calloc(1, sizeof(link_t));
-  first->data = (obj)no_destructor;
+
+  first->data        = (obj)no_destructor;
   destructors->first = first;
   destructors->last  = first;
-  destructors->size = 1;
-}
-
-bool rc_overflow(obj object)
-{
-  return rc(object) == ULONG_MAX;
+  destructors->size  = 1;
 }
 
 /**
- * Initializes the 'previous' pointer for a newly allocated object_record_t
+ * Determines if the reference count for an object has reached its maximum value.
  *
- * @param record The object record that was allocated
+ * @param object The object to control the reference count for.
+ * @return bool true if rc(object) is at its maximum, otherwise false.
+ */
+bool rc_overflow(obj object)
+{
+  return rc(object) == USHRT_MAX;
+}
+
+/**
+ * Adds a new object to @see garbage and sets the 'first' and 'last'
+ * list pointers as needed. 
+ *
+ * @param record An object record to add
  */
 void set_garbage_pointers(object_record_t *record)
 {
   link_t *new_point = (link_t*)calloc(1, sizeof(link_t));
-  new_point->data = record;
+  new_point->data   = record;
 
   if (garbage->size == 0)
     {
       garbage->first = new_point;
-      garbage->last = new_point;
+      garbage->last  = new_point;
     }
+
   else
     {
       garbage->last->next = new_point;
-      garbage->last = new_point;
+      garbage->last       = new_point;
     }
 
   ++(garbage->size);
@@ -217,7 +284,7 @@ void redirect_garbage_pointers(object_record_t *record)
       
       if (garbage->size == 1)
         {
-          garbage->last = NULL;
+          garbage->last  = NULL;
           garbage->first = NULL;
         }
       
@@ -228,7 +295,8 @@ void redirect_garbage_pointers(object_record_t *record)
 
 /**
  * Increments an objects reference count by one
- *
+ * @warning Overflow of the reference count causes the program to terminate.
+ * 
  * @param o The object for wich to increment the reference count
  */
 void retain(obj object)
@@ -243,7 +311,8 @@ void retain(obj object)
 
 /**
  * Decrements an objects reference count by one. If this results in
- * the reference count hitting 0 the associated object will be deallocated.
+ * the reference count hitting 0 the object will be deallocated
+ * or added to garbage.
  *
  * @param o The object for wich to decrement the reference count
  */
@@ -259,7 +328,7 @@ void release(obj object)
       if (rc(object) == 0)
         {
           
-          if(get_cascade_limit() > released_memory || (ignore_cascade_limit))
+          if(get_cascade_limit() > released_memory || ignore_cascade_limit)
             {
               released_memory += record->size; 
               deallocate(object);
@@ -276,7 +345,7 @@ void release(obj object)
  * Returns the current reference count of an object
  *
  * @param o The object for wich to return the reference count
- * @return size_t The current reference count for the object
+ * @return rc_format The current reference count for the object
  */
 rc_format rc(obj object)
 {
@@ -290,20 +359,23 @@ rc_format rc(obj object)
  * as its destructor argument. This function is used for strings since they are simply
  * an array of chars adjacent to the object record and need no explicit free.
  *
- * @param o Data object to be freed.
+ * @param o Data object to (not) be freed.
  */
 void no_destructor(obj object)
 {
   return;
 }
 
+/**
+ * Initializes @see garbage to to an empty list
+ */
 void initialize_garbage()
 {
-  garbage            = (list_t*)calloc(1, sizeof(list_t));
-  link_t *first      = NULL;
+  garbage        = (list_t*)calloc(1, sizeof(list_t));
+  link_t *first  = NULL;
   garbage->first = first;
   garbage->last  = first;
-  garbage->size = 0;
+  garbage->size  = 0;
 }
 /**
  * Allocates space for an object on the heap together with additional meta data
@@ -330,19 +402,27 @@ obj allocate(size_t bytes, function1_t destructor)
 
   if (!destructors)
     initialize_destructors();
-
-  object_record_t *record = (object_record_t*) malloc(sizeof(*record) + bytes);
+  /* printf("size of unsigned int: %zd\n", sizeof(unsigned int)); */
+  /* printf("size of unsigned char: %zd\n", sizeof(unsigned char)); */
+  /* printf("size of object record: %zd\n", sizeof(object_record_t)); */
+  object_record_t *record = (object_record_t*) malloc(sizeof(object_record_t) + bytes);
 
   if (!record)
     return NULL;
 
-  record->ref_count = 0;
+  record->ref_count   = 0;
   record->destr_index = add_to_destructors(destructor);
-  record->size      = sizeof(object_record_t) + bytes;
+  record->size        = sizeof(object_record_t) + bytes;
+
   return RECORD_TO_OBJECT(record);
 }
 
-//TODO: Pekar om fel här om vi inte hinner städa upp allt.
+/**
+ * Deallocates remaining garbage prior to an allocation while below the cascade limit
+ * or the number of bytes freed is lesser than the number of bytes to be allocated.
+ * 
+ * @param bytes The size of the pending allocation 
+ */
 void cleanup_before_allocation(size_t bytes)
 {
   assert(garbage);
@@ -352,13 +432,11 @@ void cleanup_before_allocation(size_t bytes)
   while (current && (released_memory <= bytes || get_cascade_limit() > released_memory))
     {
       object_record_t *record = (object_record_t*)current->data;
-      current = current->next;
-      obj object = RECORD_TO_OBJECT(record);
+      current          = current->next;
+      obj object       = RECORD_TO_OBJECT(record);
       released_memory += record->size;
       deallocate(object);
     }
-
-  //  garbage->first = current; 
 }
 
 /**
@@ -429,7 +507,6 @@ void deallocate(obj object)
  *
  * @param limit The new cascade limit
  */
-//TODO: Upper limit? -- tidsbaserad (räkna tid i bytes)
 void set_cascade_limit(size_t limit)
 {
   if ((int)limit < 0)
@@ -473,7 +550,7 @@ void cleanup()
 }
 
 /**
- * Frees all remaining allocated heap objects regardless of reference count
+ * Frees all remaining garbage objects and library specifik allocations.
  */
 void shutdown()
 {

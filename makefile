@@ -10,7 +10,10 @@ TESTFLAGS= -Wall -pg -fprofile-arcs -ftest-coverage -fPIC
 CC = gcc
 RM = -rm -f
 
-.PHONY: democlean, srcclean, demo, test
+.PHONY: democlean srcclean demo test clean format bajs
+
+clean:
+	make srcclean && make democlean
 
 srcclean:
 	$(MAKE) clean -C $(SOURCEDIR)
@@ -23,3 +26,6 @@ demo:
 
 test:
 	$(MAKE) test -C $(TESTDIR)
+
+format:
+	$(shell find . -name "*.c" -o -name "*.h" | xargs astyle --style=gnu -xd -p -xC79)

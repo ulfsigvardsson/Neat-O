@@ -494,7 +494,7 @@ deallocate (obj object)
   object_record_t *record = OBJECT_TO_RECORD (object);
 
   assert (rc (object) == 0);
-  redirect_garbage_pointers (record);	//
+  redirect_garbage_pointers (record);
   function1_t destructor = get_destructor (record->destr_index);
   destructor (object);
   free (record);
@@ -541,6 +541,7 @@ cleanup ()
     {
       object_record_t *to_cleanup =
 	(object_record_t *) remaining_garbage->data;
+
       remaining_garbage = remaining_garbage->next;
       obj object = RECORD_TO_OBJECT (to_cleanup);
       function1_t destructor = get_destructor (to_cleanup->destr_index);

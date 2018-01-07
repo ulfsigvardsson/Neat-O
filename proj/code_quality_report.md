@@ -24,7 +24,7 @@ På så sätt kan ändringar göras på en enda rad och få genomslag i resten a
 Ett undantag till detta är vid kontroll av overflow där kontrollen görs mot det literala maxvärdet av unsigned short.
 
 Gruppen anser att den viktigaste aspekten för att hålla kod läsbar för andra gruppmedlemmar har varit att hålla den väldokumenterad.
-Vi har använt oss av Doxygen-standard för dokumentation av funktioner, strukter, definitioner etc. vilket vi anser har gjort koden begriplig också för de som inte har skrivit den.
+Vi har använt oss av Doxygen-standard för dokumentation av funktioner och dess argument, returvärden, strukter, definitioner etc. vilket vi anser har gjort koden begriplig också för de som inte har skrivit den.
 Att hålla funktioner relativt koncisa och därmed lättöverskådliga har också varit av hög prioritet, den längsta funktionen är   `allocate()` på 23 rader vilket får anses befogat
 givet dess centrala roll i biblioteket.
 

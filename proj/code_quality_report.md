@@ -1,8 +1,8 @@
 # Kodkavlitetrapport
 
-Gruppen enades om att använda sig av GNU coding standard då denna ansågs tillhandahålla en tydlig uppdelning av block vilket skulle komma att underlätta
+Gruppen enades om att använda sig av **GNU coding standard** då denna ansågs tillhandahålla en tydlig uppdelning av block vilket skulle komma att underlätta
 både läsbarheten och att följa logiska flöden. Samtliga funktionsnamn återfinns därmed i den vänstraste kolumnen för att underlätta navigering.
-Verktyget Artistic Style har använts för att säkerställa att koden rättade sig efter GNU coding standards, samtliga källfiler formaterades med flaggorna
+Verktyget **Artistic Style** har använts för att säkerställa att koden rättade sig efter GNU coding standards, samtliga källfiler formaterades med flaggorna
 ```
 --style=gnu: parenteser för funktionskroppar och strukter placeras i den vänstraste kolumnen.
 
@@ -12,7 +12,7 @@ Verktyget Artistic Style har använts för att säkerställa att koden rättade 
 
 -xC79: sätter den maximala radlängden till 70 tecken.
 ```
-Dessutom använde gruppen sig av verktyget indent vars standardinställning är att indentera koden efter GNU coding standards.
+Dessutom använde gruppen sig av verktyget **indent** vars standardinställning är att indentera koden efter GNU coding standards.
 
 För att hålla hög läsbarhet har man försökt att använda sig av beskrivande makron på de ställen där koden annars skulle te sig skrymmande.
 En operation som ofta görs är konverteringen mellan objekt och metadata, vilket i ren kod ser ut som `((object_record_t*)(object) - 1)` samt `((obj)(record + 1))`.

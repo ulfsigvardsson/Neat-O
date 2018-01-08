@@ -2,8 +2,7 @@
 Here follows an introductionary description of the design and functionality of the reference counting garbage collector implemented
 by the project group Gulhämplingarna.
 
-## Table of Content
-# Table of Contents
+# Table of Content
 1. [Useful Info](#Uinfo)
     - [Format explanations](#format)
     - [Type Definitions](#typedef)
@@ -21,7 +20,17 @@ by the project group Gulhämplingarna.
 	- [Shurdown](#shutdown)
 	- [Strdup2](#strdup2)
 3. [Indepth explanation of Functions](#exp-func)
-
+	- [Retain](#retain-exp)
+	- [Release](#release-exp)
+	- [Rc](#rc-exp)
+	- [Allocate](#allocate-exp)
+	- [Allocate_array](#allocate_array-exp)
+	- [Deallocate](#deallocate-exp)
+	- [Set_cascade_limit](#set_casc-exp)
+	- [Get_cascade_limit](#get_casc-exp)
+	- [Cleanup](#cleanup-exp)
+	- [Shurdown](#shutdown-exp)
+	- [Strdup2](#strdup2-exp)
 
 # Useful Info <a name = "Uinfo"></a>
 ## Format explanations <a name = "format"></a>

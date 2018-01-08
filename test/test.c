@@ -80,11 +80,18 @@ void rc_test(void)
  * Test for the allocate function
  */
 void allocate_test(void)
-{
+{ 
   for (int i = 0; i < 7; i++)
     {
-      obj tmp = allocate(different_sizes[i], NULL);
-      CU_ASSERT_TRUE(sizeof(tmp) == 8);
+      
+      if(different_sizes[i] != 0)
+        {
+          int *tmp1 = allocate(different_sizes[i], NULL);
+          int *tmp2 = allocate(different_sizes[i], NULL);
+          CU_ASSERT_FALSE(tmp1 == NULL && tmp2 == NULL);
+          CU_ASSERT_FALSE(tmp1 == tmp2);
+        }
+   
     }
 }
 

@@ -428,8 +428,12 @@ allocate (size_t bytes, function1_t destructor)
     return RECORD_TO_OBJECT (record);
 }
 
-obj constructor_allocate_tester (size_t bytes, function1_t destructor,
-                                 rc_format refc)
+/**
+ * Only made for unit testing purposes.
+ * Basically an allocate where you can decide the starting amount of references.
+ */
+obj
+constructor_allocate_tester(size_t bytes, function1_t destructor, rc_format refc)
 {
     ignore_cascade_limit = false;
 

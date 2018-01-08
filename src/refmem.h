@@ -2,10 +2,15 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <string.h>
 
 typedef void *obj;
-typedef void(*function1_t)(obj);
-typedef short rc_format;
+typedef void (*function1_t) (obj);
+typedef unsigned short rc_format;
+typedef unsigned short size_format;
 
 void retain(obj);
 void release(obj);

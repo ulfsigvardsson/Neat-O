@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <limits.h>
 
 typedef struct link
 {
@@ -95,11 +94,8 @@ main (int argc, char *argv[])
     }
    release(arr);
    printf ("Innan cleanup.\n");
-   printf("%d", USHRT_MAX); 
    cleanup ();
 
    shutdown ();
-
-
-  return 0;
+   return 0;
 }

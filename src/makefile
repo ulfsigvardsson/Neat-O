@@ -20,4 +20,7 @@ clean:
 	$(RM) *^#*
 	$(RM) main
 
+valgrind: main
+	valgrind --leak-check=full ./main
+
 .PHONY: clean

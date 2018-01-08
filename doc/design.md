@@ -4,17 +4,17 @@ by the project group Gulhämplingarna.
 
 ## Table of Content
 # Table of Contents
-[Useful Info](#Useful Info)
-	* [Format explanations](#Format explanations)
-		* [obj](#obj)
-		* [function1_t](#function1_t)
-		* [rc_format](#rc_format)
-		* [size_format](#size_format)
-	* [Type Definitions](#Type Definitions)
-	* [Function](#Function Prototypes)
+1. [Useful Info](#Uinfo)
+	1. [Format explanations](#format)
+		1. [obj](#obj)
+		2. [function1_t](#function1_t)
+		3. [rc_format](#rc_format)
+		4. [size_format](#size_format)
+	2. [Type Definitions](#typedef)
+	3. [Function Prototypes](#func-prot)
 
-# Useful Info
-## Format explanations
+# Useful Info <a name = "Uinfo"></a>
+## Format explanations <a name = "format"></a>
 ### obj
 ### function1_t
 ### rc_format

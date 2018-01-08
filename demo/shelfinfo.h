@@ -29,7 +29,7 @@ void set_info_owner (enum owner owner, shelf_info_t * info);
 /// Fastställer ägaren till en hylla beroende på om parametersträngarna
 /// är lika, enbart applicerbart om hyllan faktiskt finns
 void set_shelf_owner (shelf_info_t * info, char *current_name,
-		      char *lookup_name);
+                      char *lookup_name);
 
 /// Returnerar namnet på varan som ska läggas till
 char *info_name (shelf_info_t * info);

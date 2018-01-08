@@ -55,7 +55,8 @@ void item_set_price (item_t * item, int price);	//Done
 /*! \param item varan att editera
  *  \param amount det nya antalet varor
  */
-void item_set_amount (shelf_t * shelf, int amount);	//cunit hittar inte denna funktion
+void item_set_amount (shelf_t * shelf,
+                      int amount);	//cunit hittar inte denna funktion
 
 /// Lägger till en mängd på en hylla
 ///

@@ -41,10 +41,10 @@ Boolean value in order to allow cleanup to ignore the cascade_limit and free eve
  typedef unsigned short rc_format;
  typedef unsigned short size_format;
 ```
-__function1_t__ is the way we define pointers to functions and in our case it's used for destructors.
+__function1_t__ is the way we define pointers to functions and in our case it's used for destructors.  
 __rc_format__ is the format of which we keep track of all references to a specific object.
-This format is the same as saying Unsigned Int however it's easier to read the code when given a typedef.
-__size_format__ is the format of which we keep track of the amount of bytes. The format is the same as saying Unsigned Int however the readability of our code increases with this typedef.
+This format is the same as saying Unsigned Int however it's easier to read the code when given a typedef.  
+__size_format__ is the format of which we keep track of the amount of bytes. The format is the same as saying Unsigned Int however the readability of our code increases with this typedef.  
 
 ## Object_record <a name="obj-rec"></a>
 Our object_record holds the valuble information needed for our program to function correctly.

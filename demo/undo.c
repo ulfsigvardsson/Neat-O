@@ -165,11 +165,11 @@ undo_last_action (tree_t * db, undo_action_t * undo)
       }
     case REMOVE:
       {
-	elem_t key = {.p = strdup2 (item_name (undo->removed.p)) };
-	elem_t elem = item_deep_copy (undo->removed);
-	tree_insert (db, key, elem);
-	item_free (undo->removed);
-	break;
+        elem_t key  = { .p = allocate_string(item_name(undo->removed.p)) };
+        elem_t elem = item_deep_copy(undo->removed); 
+        tree_insert(db, key, elem);
+        item_free(undo->removed);
+        break;
       }
     case EDIT:
       {
@@ -179,8 +179,8 @@ undo_last_action (tree_t * db, undo_action_t * undo)
 
 	tree_remove (db, key, &item_to_undo);
 
-	elem_t old_item = item_deep_copy (undo->edit_old);
-	elem_t old_key = {.p = strdup2 (item_name (old_item.p)) };
+        elem_t old_item = item_deep_copy(undo->edit_old);
+        elem_t old_key  = { .p = allocate_string(item_name(old_item.p))};
 
 	tree_insert (db, old_key, old_item);
 

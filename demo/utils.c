@@ -77,7 +77,7 @@ char *
 ask_question_shelf (char *question)
 {
   char *answer;
-  answer = ask_question (question, is_valid_shelf, (convert_func) strdup2).s;
+  answer = ask_question(question, is_valid_shelf, (convert_func) allocate_string).s;
   return answer;
 }
 
@@ -193,7 +193,7 @@ char *
 ask_question_string (char *question)
 {
 // Asks user for a string and returns it
-  char *answer = ask_question (question, not_empty, (convert_func) strdup2).s;
+  char *answer = ask_question(question, not_empty, (convert_func) allocate_string).s;
   return answer;
 }
 

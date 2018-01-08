@@ -321,19 +321,19 @@ edit_item_aux (tree_t * db, elem_t item, undo_action_t * undo,
       }
     case 'N':
       {
-	elem_t result = {.p = "dummy" };
-	elem_t copy = item_deep_copy (item);
-	elem_t old_key = {.p = item_name (item.p) };
-	edit_name (copy.p);
-
-	tree_remove (db, old_key, &result);
-	item_free (result);
-
-	elem_t key = {.p = strdup2 (item_name (copy.p)) };
-	tree_insert (db, key, copy);
-	undo_set_edit_new (undo, copy);
-	//        undo->edit_new = item_deep_copy(copy);
-	break;
+        elem_t result  = { .p = "dummy"};
+        elem_t copy    = item_deep_copy(item);
+        elem_t old_key = { .p = item_name(item.p)};
+        edit_name(copy.p);
+       
+        tree_remove(db, old_key, &result);
+        item_free(result);
+        
+        elem_t key = { .p = allocate_string(item_name(copy.p))};
+        tree_insert(db, key, copy);
+        undo_set_edit_new(undo, copy);
+        //        undo->edit_new = item_deep_copy(copy); 
+        break;
       }
     default:
       {
@@ -508,9 +508,8 @@ db_add_item (tree_t * db, undo_action_t * undo)
       char *new_id = find_available_shelf (db, key.p, info);
       int amount = ask_new_amount ();
 
-      elem_t item = {.p = item_new (strdup2 (key.p), descr, price) };
-      elem_t shelf = {.p = shelf_new (new_id, amount) };
-
+      elem_t item  = { .p = item_new(allocate_string(key.p), descr, price)};
+      elem_t shelf = { .p = shelf_new(new_id, amount) };
       item_add_shelf (item.p, shelf);
 
       print_item (item);
@@ -807,26 +806,29 @@ load_item_from_file (FILE * f)
 
   item_t *item = item_new (strdup2 (name), strdup2 (descr), atoi (cost));
 
+  item_t *item = item_new(allocate_string(name), allocate_string(descr), atoi(cost)); 
   int shelf_count = 0;
   fscanf (f, "%d\n", &shelf_count);
   list_t *shelves = item_shelves (item);
 
   for (int i = 0; i < shelf_count; ++i)
     {
-      char *shelf_name = allocate_array (4, sizeof (char), NULL);
-      char *shelf_amount = allocate_array (20, sizeof (char), NULL);
-      fgets (shelf_name, 4, f);
-      fgets (shelf_amount, 20, f);
 
-      stripline (shelf_name);
-      stripline (shelf_amount);
+      char *shelf_name   = allocate_array(4, sizeof(char), NULL);
+      char *shelf_amount = allocate_array(20, sizeof(char), NULL);
+      //char *shelf_name = NULL;
+      //char *shelf_amount = NULL;
+      fgets(shelf_name, 4, f);
+      fgets(shelf_amount, 20, f);
+      //getline(&shelf_name, &bytes, f);
+      //getline(&shelf_amount, &bytes, f);
 
-      elem_t shelf = {.p =
-	  shelf_new (strdup2 (shelf_name), atoi (shelf_amount))
-      };
-      list_append (shelves, shelf);
-      deallocate (shelf_name);
-      deallocate (shelf_amount);
+      stripline(shelf_name);
+      stripline(shelf_amount);
+      
+      elem_t shelf = { .p = shelf_new(allocate_string(shelf_name), atoi(shelf_amount))};
+      list_append(shelves, shelf);
+
     }
   deallocate (name);
   deallocate (descr);
@@ -843,9 +845,9 @@ read_db (char *path)
 
   for (int i = 0; i < size; ++i)
     {
-      elem_t item = {.p = load_item_from_file (f) };
-      elem_t key = {.p = strdup2 (item_name (item.p)) };
-      tree_insert (db, key, item);
+      elem_t item = { .p = load_item_from_file(f) };
+      elem_t key  = { .p = allocate_string(item_name(item.p))};
+      tree_insert(db, key, item);
     }
 
   fclose (f);

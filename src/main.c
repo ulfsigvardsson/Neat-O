@@ -94,10 +94,8 @@ main (int argc, char *argv[])
     }
    release(arr);
    printf ("Innan cleanup.\n");
-  cleanup ();
+   cleanup ();
 
-  shutdown ();
-
-
-  return 0;
+   shutdown ();
+   return 0;
 }

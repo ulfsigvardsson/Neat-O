@@ -1,5 +1,5 @@
-/*refmem.c -- automatic garbage collector using reference counting.*/
 #include "refmem.h"
+#include <stdio.h>
 
 /* =================================
  * -------------MACROS--------------
@@ -411,6 +411,34 @@ allocate (size_t bytes, function1_t destructor)
   return RECORD_TO_OBJECT (record);
 }
 
+obj constructor_allocate_tester(size_t bytes, function1_t destructor, rc_format refc)
+{
+ ignore_cascade_limit = false;
+
+  if (!garbage)
+    initialize_garbage ();
+
+  if (garbage->size > 0)
+    {
+      cleanup_before_allocation (bytes);
+    }
+
+  if (!destruct_list)
+    initialize_destructors ();
+
+  object_record_t *record =
+    (object_record_t *) malloc (sizeof (object_record_t) + bytes);
+
+  if (!record)
+    return NULL;
+
+  record->ref_count = refc;
+  record->destr_index = add_to_destructors (destructor);
+  record->size = sizeof (object_record_t) + bytes;
+
+  return RECORD_TO_OBJECT (record);
+}
+
 /**
  * Deallocates remaining garbage prior to an allocation while below the cascade limit
  * or the number of bytes freed is lesser than the number of bytes to be allocated.
@@ -437,6 +465,7 @@ cleanup_before_allocation (size_t bytes)
 /**
  * Allocates space for an array an initializes each byte to 0. Equivalent to 'calloc'.
  *
+<<<<<<< HEAD
  * @param elements The number of elements in the array.
  * @param elem_size The size of each array element.
  * @param destructor Function pointer to the destructor.
@@ -453,6 +482,7 @@ allocate_array (size_t elements, size_t elem_size, function1_t destructor)
     return NULL;
 
   return memset (object, 0, total);
+
 }
 
 /**
@@ -560,3 +590,4 @@ shutdown ()
   free (garbage);
   free_list (destruct_list);
 }
+

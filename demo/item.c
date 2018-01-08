@@ -240,7 +240,7 @@ elem_t shelf_deep_copy(elem_t shelf)
   retain(copy);
   assert(original);
   
-  copy->id = strdup2(original->id);
+  copy->id = allocate_string(original->id);
   copy->amount = original->amount;
   
   elem_t result = { .p = copy };
@@ -254,8 +254,8 @@ elem_t item_deep_copy(elem_t elem)
   retain(to);
   assert(from);
   
-  to->name  = strdup2(from->name);
-  to->descr = strdup2(from->descr);
+  to->name  = allocate_string(from->name);
+  to->descr = allocate_string(from->descr);
   to->price = from->price;
 
   list_t *shelves_copy = list_new(shelf_copy, shelf_free, shelf_compare); 

@@ -236,7 +236,7 @@ obj allocate_array(size_t elements, size_t elem_size, function1_t destructor)
  * @param org The string to allocate
  * @return char* Pointer to the allocated string
  */
-char *strdup2(char *org)
+char *allocate_string(char *org)
 {
   char *result;
   int org_size = strlen(org);

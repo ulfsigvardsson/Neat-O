@@ -17,4 +17,4 @@ void set_cascade_limit(size_t);
 size_t get_cascade_limit();
 void cleanup();
 void shutdown();
-char *strdup2(char*);
+char *allocate_string(char*);

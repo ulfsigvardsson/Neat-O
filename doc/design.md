@@ -6,10 +6,6 @@ by the project group Gulhämplingarna.
 # Table of Contents
 1. [Useful Info](#Uinfo)
     - [Format explanations](#format)
-      - [obj](#obj)
-	  - [function1_t](#function1_t)
-	  - [rc_format](#rc_format)
-	  - [size_format](#size_format)
     - [Type Definitions](#typedef)
     - [Function Prototypes](#func-prot)
 2. [Usage of Functions](#use-func")
@@ -29,10 +25,10 @@ by the project group Gulhämplingarna.
 
 # Useful Info <a name = "Uinfo"></a>
 ## Format explanations <a name = "format"></a>
-### obj <a name = "obj"></a>
-### function1_t <a name = "function1_t"></a>
-### rc_format <a name = "rc_format"></a>
-### size_format <a name = "size_format"></a>
+### obj
+### function1_t
+### rc_format
+### size_format
 
 ## Type Definitions <a name = "typedef"></a>
 ```c

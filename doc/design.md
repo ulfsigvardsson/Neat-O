@@ -3,13 +3,26 @@ Here follows an introductionary description of the design and functionality of t
 by the project group Gulhämplingarna.
 
 ## Overview
-The header file consists of the following functions.
+
+
+***
+
+# Useful info
+## Format explanations
+### obj
+### function1_t
+### rc_format
+### size_format
+
+## Type definitions
 ```c
  typedef void *obj;
  typedef void(*function1_t)(obj);
  typedef unsigned short rc_format;
  typedef unsigned short size_format;
-
+```
+## Function definitions
+```c
  void retain(obj);
  void release(obj);
  rc_format rc(obj);
@@ -23,6 +36,9 @@ The header file consists of the following functions.
  char *strdup2(char*);
 ```
 
+***
+
+# Usage of Functions
 ## Retain
 ```c
 void retain(obj);

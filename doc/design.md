@@ -21,7 +21,7 @@ by the project group Gulhämplingarna.
  typedef unsigned short rc_format;
  typedef unsigned short size_format;
 ```
-## Function definitions
+## Function prototypes
 ```c
  void retain(obj);
  void release(obj);

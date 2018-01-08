@@ -4,8 +4,8 @@ by the project group Gulhämplingarna.
 
 # Table of Content
 * [Useful Info](#Uinfo)
-    - [Format explanations](#format)
-    - [Type Definitions](#typedef)
+    - [Typedef & Format Explanations](#format)
+    - [Object_record](#obj-rec)
 * [Explanation of Functions](#exp-func)
 	- [Retain](#retain-exp)
 	- [Release](#release-exp)
@@ -22,12 +22,6 @@ by the project group Gulhämplingarna.
 # Useful Info <a name = "Uinfo"></a>
 
 ## Type Definitions <a name = "typedef"></a>
-```c
- typedef void *obj;
- typedef void(*function1_t)(obj);
- typedef unsigned short rc_format;
- typedef unsigned short size_format;
-```
 
 ## Global variables
 ### cascade_limit
@@ -41,16 +35,18 @@ Destruct_list is a list containing all the destructor functions in use by the pr
 ### ignore_cascade_limit
 Boolean value in order to allow cleanup to ignore the cascade_limit and free every remaining bit of garbage in one single cycle.
 
-## Format explanations <a name = "format"></a>
-### function1_t
-function1_t is the way we define pointers to functions and in our case it's used for destructors.
-### rc_format
-rc_format is the format of which we keep track of all references to a specific object.
+## Typedef & Format Explanations <a name = "format"></a>
+```c
+ typedef void(*function1_t)(obj);
+ typedef unsigned short rc_format;
+ typedef unsigned short size_format;
+```
+__function1_t__ is the way we define pointers to functions and in our case it's used for destructors.
+__rc_format__ is the format of which we keep track of all references to a specific object.
 This format is the same as saying Unsigned Int however it's easier to read the code when given a typedef.
-### size_format
-size_format is the format of which we keep track of the amount of bytes. The format is the same as saying Unsigned Int however the readability of our code increases with this typedef.
+__size_format__ is the format of which we keep track of the amount of bytes. The format is the same as saying Unsigned Int however the readability of our code increases with this typedef.
 
-## Object_record
+## Object_record <a name="obj-rec"></a>
 Our object_record holds the valuble information needed for our program to function correctly.
 It holds the meta data consisting of the current amount of references to a heap object along with an index number corresponding to a destructor function and the amount of bytes occupied by the allocated object.
 ```c

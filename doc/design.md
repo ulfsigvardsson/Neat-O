@@ -6,10 +6,10 @@ by the project group Gulhämplingarna.
 # Table of Contents
 * [Useful Info](#Uinfo)
 	1. [Format explanations](#format)
-		-- [obj](#obj)
-		-- [function1_t](#function1_t)
-		-- [rc_format](#rc_format)
-		-- [size_format](#size_format)
+		- [obj](#obj)
+		- [function1_t](#function1_t)
+		- [rc_format](#rc_format)
+		- [size_format](#size_format)
 	2. [Type Definitions](#typedef)
 	3. [Function Prototypes](#func-prot)
 

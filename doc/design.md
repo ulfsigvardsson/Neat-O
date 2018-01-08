@@ -137,3 +137,25 @@ char* strdup2(char*);
 
 # Indept explanation of Functions <a name = "exp-func"></a>
 
+## Retain <a name = "retain-exp"></a>
+
+## Release <a name = "release-exp"></a>
+
+## Rc <a name = "rc-exp"></a>
+
+## Allocate <a name = "allocate-exp"></a>
+
+## Allocate_array <a name = "allocate_array-exp"></a>
+
+## Deallocate <a name = "deallocate-exp"></a>
+
+## Set_cascade_limit <a name = "set_casc-exp"></a>
+
+## Get_cascade_limit <a name = "get_casc-exp"></a>
+
+## Cleanup <a name = "cleanup-exp"></a>
+
+## shutdown <a name = "shutdown-exp"></a>
+
+## strdup2 <a name = "strdup2-exp"></a>
+

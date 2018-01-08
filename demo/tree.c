@@ -21,10 +21,10 @@
  */
 struct node
 {
-  elem_t elem;			/*< Nodens element */
-  tree_key_t key;		/*< Nodens nyckel */
-  node_t *left;			/*< Nodens vänstra subträd */
-  node_t *right;		/*< Nodens högra subträd */
+    elem_t elem;			/*< Nodens element */
+    tree_key_t key;		/*< Nodens nyckel */
+    node_t *left;			/*< Nodens vänstra subträd */
+    node_t *right;		/*< Nodens högra subträd */
 };
 
 /**
@@ -32,12 +32,12 @@ struct node
  */
 struct tree
 {
-  node_t *root;			///< Trädets rotnod
-  element_copy_fun copy_f;	///< Trädets funktion för att kopiera sina element
-  element_free_fun e_free_f;	///< Funktion för att frigöra element i trädet
-  key_free_fun k_free_f;	///< Funktion för att frigöra nycklar i trädet
-  element_comp_fun cmp_f;	///< Funktion för att jämföra element i trädet
-  size_t size;			///< Antal noder i trädet
+    node_t *root;			///< Trädets rotnod
+    element_copy_fun copy_f;	///< Trädets funktion för att kopiera sina element
+    element_free_fun e_free_f;	///< Funktion för att frigöra element i trädet
+    key_free_fun k_free_f;	///< Funktion för att frigöra nycklar i trädet
+    element_comp_fun cmp_f;	///< Funktion för att jämföra element i trädet
+    size_t size;			///< Antal noder i trädet
 };
 
 /**
@@ -47,7 +47,7 @@ struct tree
 void *
 get_root_elem (tree_t * tree)
 {
-  return (tree->root->elem.p);
+    return (tree->root->elem.p);
 }
 
 /**
@@ -57,7 +57,7 @@ get_root_elem (tree_t * tree)
 elem_t
 tree_no_copy (elem_t elem)
 {
-  return elem;
+    return elem;
 }
 
 /**
@@ -67,7 +67,7 @@ tree_no_copy (elem_t elem)
 void
 tree_no_free (elem_t elem)
 {
-  return;
+    return;
 }
 
 /**
@@ -78,14 +78,14 @@ tree_no_free (elem_t elem)
 int
 tree_no_compare (elem_t elem1, elem_t elem2)
 {
-  if (elem1.i == elem2.i)
-    return 0;
-  else if (elem1.i > elem2.i)
-    {
-      return 1;
-    }
-  else
-    return -1;
+    if (elem1.i == elem2.i)
+        return 0;
+    else if (elem1.i > elem2.i)
+        {
+            return 1;
+        }
+    else
+        return -1;
 }
 
 /**
@@ -95,9 +95,9 @@ tree_no_compare (elem_t elem1, elem_t elem2)
 node_t *
 node_new ()
 {
-  node_t *node = allocate_array (1, sizeof (node_t), NULL);
-  retain (node);
-  return node;
+    node_t *node = allocate_array (1, sizeof (node_t), NULL);
+    retain (node);
+    return node;
 }
 
 /**
@@ -111,18 +111,18 @@ node_new ()
   */
 tree_t *
 tree_new (element_copy_fun element_copy, key_free_fun key_free,
-	  element_free_fun elem_free, element_comp_fun compare)
+          element_free_fun elem_free, element_comp_fun compare)
 {
-  tree_t *tree = allocate_array (1, sizeof (tree_t), NULL);
-  tree->root = NULL;
-  retain (tree);
+    tree_t *tree = allocate_array (1, sizeof (tree_t), NULL);
+    tree->root = NULL;
+    retain (tree);
 
-  Copy = element_copy ? element_copy : tree_no_copy;
-  Free_key = key_free ? key_free : tree_no_free;
-  Free_elem = elem_free ? elem_free : tree_no_free;
-  Comp = compare ? compare : tree_no_compare;
+    Copy = element_copy ? element_copy : tree_no_copy;
+    Free_key = key_free ? key_free : tree_no_free;
+    Free_elem = elem_free ? elem_free : tree_no_free;
+    Comp = compare ? compare : tree_no_compare;
 
-  return tree;
+    return tree;
 
 }
 
@@ -136,9 +136,9 @@ tree_new (element_copy_fun element_copy, key_free_fun key_free,
 bool
 tree_delete_elems (tree_key_t key, elem_t elem, void *free_elem)
 {
-  element_free_fun fun = free_elem;
-  fun (elem);
-  return true;
+    element_free_fun fun = free_elem;
+    fun (elem);
+    return true;
 }
 
 /**
@@ -151,9 +151,9 @@ tree_delete_elems (tree_key_t key, elem_t elem, void *free_elem)
 bool
 tree_delete_keys (tree_key_t key, elem_t elem, void *free_key)
 {
-  element_free_fun fun = free_key;
-  fun (key);
-  return true;
+    element_free_fun fun = free_key;
+    fun (key);
+    return true;
 }
 
 /**
@@ -163,17 +163,17 @@ tree_delete_keys (tree_key_t key, elem_t elem, void *free_key)
 void
 tree_delete_nodes (node_t ** node)
 {
-  if (*node)
-    {
-      tree_delete_nodes (&(*node)->left);
-      tree_delete_nodes (&(*node)->right);
-      release (*node);
-      (*node) = NULL;
-    }
-  else
-    {
-      return;
-    }
+    if (*node)
+        {
+            tree_delete_nodes (& (*node)->left);
+            tree_delete_nodes (& (*node)->right);
+            release (*node);
+            (*node) = NULL;
+        }
+    else
+        {
+            return;
+        }
 }
 
 /**
@@ -186,19 +186,19 @@ tree_delete_nodes (node_t ** node)
 void
 tree_delete (tree_t * tree, bool delete_keys, bool delete_elements)
 {
-  if (delete_elements)
-    {
-      tree_apply (tree, inorder, tree_delete_elems, Free_elem);
-    }
-  if (delete_keys)
-    {
-      tree_apply (tree, inorder, tree_delete_keys, Free_key);
-    }
+    if (delete_elements)
+        {
+            tree_apply (tree, inorder, tree_delete_elems, Free_elem);
+        }
+    if (delete_keys)
+        {
+            tree_apply (tree, inorder, tree_delete_keys, Free_key);
+        }
 
-  tree_delete_nodes (&tree->root);
-  tree->size = 0;
-  release (tree);
-  return;
+    tree_delete_nodes (&tree->root);
+    tree->size = 0;
+    release (tree);
+    return;
 }
 
 /**
@@ -209,7 +209,7 @@ tree_delete (tree_t * tree, bool delete_keys, bool delete_elements)
 int
 tree_size (tree_t * tree)
 {
-  return tree->size;
+    return tree->size;
 }
 
 /**
@@ -218,7 +218,7 @@ tree_size (tree_t * tree)
 int
 max (int a, int b)
 {
-  return a > b ? a : b;
+    return a > b ? a : b;
 }
 
 /**
@@ -229,13 +229,13 @@ max (int a, int b)
 int
 tree_depth_aux (node_t * node)
 {
-  if (node && (node->right || node->left))
-    {
-      return 1 + max (tree_depth_aux (node->left),
-		      tree_depth_aux (node->right));
-    }
+    if (node && (node->right || node->left))
+        {
+            return 1 + max (tree_depth_aux (node->left),
+                            tree_depth_aux (node->right));
+        }
 
-  return 0;
+    return 0;
 }
 
 /**
@@ -246,12 +246,12 @@ tree_depth_aux (node_t * node)
 int
 tree_depth (tree_t * tree)
 {
-  if (tree)
-    {
-      return tree_depth_aux (tree->root);
-    }
+    if (tree)
+        {
+            return tree_depth_aux (tree->root);
+        }
 
-  return 0;
+    return 0;
 }
 
 /**
@@ -266,85 +266,85 @@ tree_depth (tree_t * tree)
 node_t **
 tree_traverse (tree_t * tree, elem_t key)
 {
-  node_t **c = &(tree->root);
+    node_t **c = & (tree->root);
 
-  while (*c)
-    {
-      if (Compare_keys == 0)
-	return c;
+    while (*c)
+        {
+            if (Compare_keys == 0)
+                return c;
 
-      else if (Compare_keys < 0)
-	{
-	  c = &((*c)->right);
-	}
-      else if (Compare_keys > 0)
-	{
-	  c = &((*c)->left);
-	}
-    }
-  return c;
+            else if (Compare_keys < 0)
+                {
+                    c = & ((*c)->right);
+                }
+            else if (Compare_keys > 0)
+                {
+                    c = & ((*c)->left);
+                }
+        }
+    return c;
 }
 
 bool
 get_balance_aux (node_t * node)
 {
-  if (node)
-    {
-      return (abs (tree_depth_aux (node->left) - tree_depth_aux (node->right))
-	      < 2 && get_balance_aux (node->left)
-	      && get_balance_aux (node->right));
-    }
-  return true;
+    if (node)
+        {
+            return (abs (tree_depth_aux (node->left) - tree_depth_aux (node->right))
+                    < 2 && get_balance_aux (node->left)
+                    && get_balance_aux (node->right));
+        }
+    return true;
 
 }
 
 bool
 get_balance (tree_t * tree)
 {
-  return (get_balance_aux (tree->root));
+    return (get_balance_aux (tree->root));
 }
 
 // Balanserar ett träd
 void
 build_tree_aux (tree_t * tree, elem_t * element_list, tree_key_t * key_list,
-		int low, int high)
+                int low, int high)
 {
-  int index = (high + low) / 2;
-  elem_t element = element_list[index];
-  tree_key_t key = key_list[index];
-  tree_insert (tree, key, element);
+    int index = (high + low) / 2;
+    elem_t element = element_list[index];
+    tree_key_t key = key_list[index];
+    tree_insert (tree, key, element);
 
-  if (index > low)
-    {
-      build_tree_aux (tree, element_list, key_list, low, index - 1);
-    }
-  if (index < high)
-    {
-      build_tree_aux (tree, element_list, key_list, index + 1, high);
-    }
+    if (index > low)
+        {
+            build_tree_aux (tree, element_list, key_list, low, index - 1);
+        }
+    if (index < high)
+        {
+            build_tree_aux (tree, element_list, key_list, index + 1, high);
+        }
 }
 
 
 void
 tree_balance (tree_t ** tree)
 {
-  if ((*tree)->size < 3)
-    {
-      return;
-    }
-  elem_t *element_list = tree_elements (*tree);
-  tree_key_t *key_list = tree_keys (*tree);
+    if ((*tree)->size < 3)
+        {
+            return;
+        }
+    elem_t *element_list = tree_elements (*tree);
+    tree_key_t *key_list = tree_keys (*tree);
 
-  tree_t *new_tree = tree_new ((*tree)->copy_f, (*tree)->k_free_f,
-			       (*tree)->e_free_f, (*tree)->cmp_f);
+    tree_t *new_tree = tree_new ((*tree)->copy_f, (*tree)->k_free_f,
+                                 (*tree)->e_free_f, (*tree)->cmp_f);
 
-  build_tree_aux (new_tree, element_list, key_list, 0, (*tree)->size - 1);
+    build_tree_aux (new_tree, element_list, key_list, 0, (*tree)->size - 1);
 
-  release (element_list);
-  release (key_list);
+    release (element_list);
+    release (key_list);
 
-  tree_delete (*tree, false, false);
-  *tree = new_tree;
+    tree_delete (*tree, false, false);
+    *tree = new_tree;
 }
 
 /// Insert element into the tree. Returns false if the key is already used.
@@ -365,27 +365,27 @@ bool
 tree_insert (tree_t * tree, tree_key_t key, elem_t elem)
 {
 // Corner case för tomma träd
-  if (tree->size == 0)
-    {
-      tree->root = node_new ();
-      tree->root->elem = Copy (elem);
-      tree->root->key = key;
-      tree->size++;
-    }
+    if (tree->size == 0)
+        {
+            tree->root = node_new ();
+            tree->root->elem = Copy (elem);
+            tree->root->key = key;
+            tree->size++;
+        }
 
-  // Trädet innehåller redan nyckeln
-  else if (tree_has_key (tree, key))
-    return false;
+    // Trädet innehåller redan nyckeln
+    else if (tree_has_key (tree, key))
+        return false;
 
-  else
-    {
-      node_t **c = tree_traverse (tree, key);
-      *c = node_new ();
-      (*c)->elem = Copy (elem);
-      (*c)->key = key;
-      tree->size++;
-    }
-  return true;
+    else
+        {
+            node_t **c = tree_traverse (tree, key);
+            *c = node_new ();
+            (*c)->elem = Copy (elem);
+            (*c)->key = key;
+            tree->size++;
+        }
+    return true;
 }
 
 /// Checks whether a key is used in a tree
@@ -398,8 +398,8 @@ tree_insert (tree_t * tree, tree_key_t key, elem_t elem)
 bool
 tree_has_key (tree_t * tree, tree_key_t key)
 {
-  node_t **c = tree_traverse (tree, key);
-  return *c != NULL;
+    node_t **c = tree_traverse (tree, key);
+    return *c != NULL;
 }
 
 /// Finds the element for a given key in tree.
@@ -411,35 +411,35 @@ tree_has_key (tree_t * tree, tree_key_t key)
 bool
 tree_get (tree_t * tree, tree_key_t key, elem_t * result)
 {
-  node_t **c = tree_traverse (tree, key);
+    node_t **c = tree_traverse (tree, key);
 
-  if (*c)
-    {
-      *result = ((*c)->elem);
-      return true;
-    }
+    if (*c)
+        {
+            *result = ((*c)->elem);
+            return true;
+        }
 
-  else
-    return false;
+    else
+        return false;
 }
 
 // Frigör en nod i trädet
 void
 free_node (tree_t * tree, node_t * node)
 {
-  Free_key (node->key);
-  Free_elem (node->elem);
-  release (node);
+    Free_key (node->key);
+    Free_elem (node->elem);
+    release (node);
 }
 
 // Hittar den minsta efterträdaren till ett element i trädet
 node_t **
 find_smallest_successor (node_t ** node)
 {
-  while ((*node)->left)
-    node = &(*node)->left;
+    while ((*node)->left)
+        node = & (*node)->left;
 
-  return node;
+    return node;
 }
 
 /// Removes the element for a given key in tree.
@@ -451,56 +451,57 @@ find_smallest_successor (node_t ** node)
 bool
 tree_remove (tree_t * tree, tree_key_t key, elem_t * result)
 {
-  node_t **to_remove = tree_traverse (tree, key);
+    node_t **to_remove = tree_traverse (tree, key);
 
-  if (*to_remove)
-    {
-      if ((*to_remove)->right && (*to_remove)->left)
-	{
-	  node_t **minimum = find_smallest_successor (&(*to_remove)->right);	// Elementet att ersätta med
+    if (*to_remove)
+        {
+            if ((*to_remove)->right && (*to_remove)->left)
+                {
+                    node_t **minimum = find_smallest_successor (&
+                                       (*to_remove)->right);	// Elementet att ersätta med
 
-	  *result = Copy ((*to_remove)->elem);
-	  (*to_remove)->elem = Copy ((*minimum)->elem);	// Kopiera data
-	  Free_key ((*to_remove)->key);
-	  (*to_remove)->key = (*minimum)->key;
-	  release (*minimum);
-	  *minimum = NULL;	// Nolla pekaren till den minsta efterföljaren (?)
-	}
+                    *result = Copy ((*to_remove)->elem);
+                    (*to_remove)->elem = Copy ((*minimum)->elem);	// Kopiera data
+                    Free_key ((*to_remove)->key);
+                    (*to_remove)->key = (*minimum)->key;
+                    release (*minimum);
+                    *minimum = NULL;	// Nolla pekaren till den minsta efterföljaren (?)
+                }
 
-      else if ((*to_remove)->right)
-	{
-	  *result = Copy ((*to_remove)->elem);
-	  node_t *temp = *to_remove;
-	  *to_remove = (*to_remove)->right;
+            else if ((*to_remove)->right)
+                {
+                    *result = Copy ((*to_remove)->elem);
+                    node_t *temp = *to_remove;
+                    *to_remove = (*to_remove)->right;
 
-	  Free_key (temp->key);
-	  release (temp);
-	}
+                    Free_key (temp->key);
+                    release (temp);
+                }
 
-      else if ((*to_remove)->left)
-	{
-	  *result = Copy ((*to_remove)->elem);
-	  node_t *temp = *to_remove;
-	  *to_remove = (*to_remove)->left;
+            else if ((*to_remove)->left)
+                {
+                    *result = Copy ((*to_remove)->elem);
+                    node_t *temp = *to_remove;
+                    *to_remove = (*to_remove)->left;
 
-	  Free_key (temp->key);
-	  release (temp);
-	}
+                    Free_key (temp->key);
+                    release (temp);
+                }
 
-      else if (Is_leaf)
-	{
-	  *result = Copy ((*to_remove)->elem);
+            else if (Is_leaf)
+                {
+                    *result = Copy ((*to_remove)->elem);
 
-	  Free_key ((*to_remove)->key);
-	  release (*to_remove);
-	  (*to_remove) = NULL;
-	}
+                    Free_key ((*to_remove)->key);
+                    release (*to_remove);
+                    (*to_remove) = NULL;
+                }
 
-      tree->size--;
-      return true;
-    }
+            tree->size--;
+            return true;
+        }
 
-  return false;
+    return false;
 }
 
 /// HJälpfunktion för tree_keys
@@ -510,15 +511,15 @@ tree_remove (tree_t * tree, tree_key_t key, elem_t * result)
 void
 tree_keys_aux (node_t * node, elem_t * keys, int *index)
 {
-  if (!node)
-    return;
-  else
-    {
-      tree_keys_aux (node->left, keys, index);
-      keys[*index] = node->key;
-      ++(*index);
-      tree_keys_aux (node->right, keys, index);
-    }
+    if (!node)
+        return;
+    else
+        {
+            tree_keys_aux (node->left, keys, index);
+            keys[*index] = node->key;
+            ++ (*index);
+            tree_keys_aux (node->right, keys, index);
+        }
 }
 
 /// Returns an array holding all the keys in the tree
@@ -529,11 +530,11 @@ tree_keys_aux (node_t * node, elem_t * keys, int *index)
 tree_key_t *
 tree_keys (tree_t * tree)
 {
-  int size = tree_size (tree);
-  elem_t *keys = allocate_array (size, sizeof (elem_t), NULL);
-  int index = 0;
-  tree_keys_aux (tree->root, keys, &index);
-  return keys;
+    int size = tree_size (tree);
+    elem_t *keys = allocate_array (size, sizeof (elem_t), NULL);
+    int index = 0;
+    tree_keys_aux (tree->root, keys, &index);
+    return keys;
 }
 
 /// Hjälpfunktion för tree_elements
@@ -543,15 +544,15 @@ tree_keys (tree_t * tree)
 void
 tree_elements_aux (node_t * node, elem_t * elems, int *index)
 {
-  if (!node)
-    return;
-  else
-    {
-      tree_elements_aux (node->left, elems, index);
-      elems[*index] = node->elem;
-      (*index)++;
-      tree_elements_aux (node->right, elems, index);
-    }
+    if (!node)
+        return;
+    else
+        {
+            tree_elements_aux (node->left, elems, index);
+            elems[*index] = node->elem;
+            (*index)++;
+            tree_elements_aux (node->right, elems, index);
+        }
 }
 
 /// Returns an array holding all the elements in the tree
@@ -563,11 +564,11 @@ tree_elements_aux (node_t * node, elem_t * elems, int *index)
 elem_t *
 tree_elements (tree_t * tree)
 {
-  int size = tree_size (tree);
-  elem_t *elems = allocate_array (size, sizeof (elem_t), NULL);
-  int index = 0;
-  tree_elements_aux (tree->root, elems, &index);
-  return elems;
+    int size = tree_size (tree);
+    elem_t *elems = allocate_array (size, sizeof (elem_t), NULL);
+    int index = 0;
+    tree_elements_aux (tree->root, elems, &index);
+    return elems;
 }
 
 
@@ -578,43 +579,43 @@ tree_elements (tree_t * tree)
 /// \success boolpekare som sätts till true om funktionen lyckas genomföra sitt arbete på noden eller på någon av noderna i subträden
 bool
 node_apply (node_t * node, enum tree_order order, key_elem_apply_fun fun,
-	    bool * success, void *data)
+            bool * success, void *data)
 {
-  if (node)
-    {
+    if (node)
+        {
 
-      switch (order)
-	{
-	case inorder:
-	  Apply_left;
-	  if (Apply_key)
-	    {
-	      *success = true;
-	    }
-	  Apply_right;
-	  break;
+            switch (order)
+                {
+                case inorder:
+                    Apply_left;
+                    if (Apply_key)
+                        {
+                            *success = true;
+                        }
+                    Apply_right;
+                    break;
 
-	case preorder:
-	  if (Apply_key)
-	    {
-	      *success = true;
-	    }
-	  Apply_left;
-	  Apply_right;
-	  break;
+                case preorder:
+                    if (Apply_key)
+                        {
+                            *success = true;
+                        }
+                    Apply_left;
+                    Apply_right;
+                    break;
 
-	default:
-	  Apply_left;
-	  Apply_right;
-	  if (Apply_key)
-	    {
-	      *success = true;
-	    }
-	  break;
-	}
-    }
+                default:
+                    Apply_left;
+                    Apply_right;
+                    if (Apply_key)
+                        {
+                            *success = true;
+                        }
+                    break;
+                }
+        }
 
-  return *success;
+    return *success;
 }
 
 /// Applies a function to all elements in the tree in a specified order.
@@ -635,12 +636,12 @@ node_apply (node_t * node, enum tree_order order, key_elem_apply_fun fun,
 /// \returns the result of all fun calls, combined with OR (||)
 bool
 tree_apply (tree_t * tree, enum tree_order order, key_elem_apply_fun fun,
-	    void *data)
+            void *data)
 {
-  if (tree)
-    {
-      bool success = false;
-      return node_apply (tree->root, order, fun, &success, data);
-    }
-  return false;
+    if (tree)
+        {
+            bool success = false;
+            return node_apply (tree->root, order, fun, &success, data);
+        }
+    return false;
 }

@@ -39,7 +39,7 @@ bool shelf_is_in_list (elem_t key, elem_t item, void *info);
 
 
 void merge_shelves (shelf_info_t * info, elem_t shelf_to_edit,
-		    list_t * shelves);
+                    list_t * shelves);
 
 
 /// Avänds vid redigering av lagerhylla när två hyllor ska slås ihop
@@ -48,7 +48,7 @@ void merge_shelves (shelf_info_t * info, elem_t shelf_to_edit,
 /// \param shelf_to_edit den gamla hyllan
 /// \param shelves listan med alla hyllor
 void merge_shelves (shelf_info_t * info, elem_t shelf_to_edit,
-		    list_t * shelves);
+                    list_t * shelves);
 
 /// Frigör alla hyllor i en lista
 ///

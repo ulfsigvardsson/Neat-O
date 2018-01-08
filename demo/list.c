@@ -4,25 +4,25 @@ typedef struct link link_t;
 
 struct link
 {
-  elem_t elem;
-  link_t *next;
+    elem_t elem;
+    link_t *next;
 };
 
 struct list
 {
-  link_t *first;
-  link_t *last;
-  element_copy_fun copy_f;
-  element_free_fun free_f;
-  element_comp_fun cmp_f;
-  size_t size;
+    link_t *first;
+    link_t *last;
+    element_copy_fun copy_f;
+    element_free_fun free_f;
+    element_comp_fun cmp_f;
+    size_t size;
 };
 
 
 elem_t
 list_no_copy (elem_t elem)
 {
-  return elem;
+    return elem;
 }
 
 
@@ -35,89 +35,89 @@ list_no_copy (elem_t elem)
 /// TODO: lägg till en standard compare-funktion för listor så vi slipper if-satserna
 list_t *
 list_new (element_copy_fun copy, element_free_fun free_f,
-	  element_comp_fun compare)
+          element_comp_fun compare)
 {
-  list_t *list = (list_t *) allocate_array (1, sizeof (list_t), NULL);
-  retain (list);
-  list->free_f = free_f;
-  list->copy_f = copy ? copy : list_no_copy;
-  list->cmp_f = compare;
+    list_t *list = (list_t *) allocate_array (1, sizeof (list_t), NULL);
+    retain (list);
+    list->free_f = free_f;
+    list->copy_f = copy ? copy : list_no_copy;
+    list->cmp_f = compare;
 
-  return list;
+    return list;
 }
 
 link_t *
 link_new (elem_t elem, link_t * next)
 {
-  link_t *link = (link_t *) allocate_array (1, sizeof (link_t), NULL);
-  retain (link);
-  link->elem = elem;
-  link->next = next;
-  retain (link->next);
-  return link;
+    link_t *link = (link_t *) allocate_array (1, sizeof (link_t), NULL);
+    retain (link);
+    link->elem = elem;
+    link->next = next;
+    retain (link->next);
+    return link;
 }
 
 int
 adjust_index_insert (int index, int size)
 {
-  /// Negative indexes count from the back
-  if (index < 0)
-    {
-      /// Call adjust_index again to handle when
-      /// adjusted index is still negative
-      return adjust_index_insert (size + index + 1, size);
-    }
+    /// Negative indexes count from the back
+    if (index < 0)
+        {
+            /// Call adjust_index again to handle when
+            /// adjusted index is still negative
+            return adjust_index_insert (size + index + 1, size);
+        }
 
-  /// Index too big, adjust to after last element
-  if (index > size)
-    {
-      return size;
-    }
+    /// Index too big, adjust to after last element
+    if (index > size)
+        {
+            return size;
+        }
 
-  /// Index OK
-  return index;
+    /// Index OK
+    return index;
 }
 
 int
 adjust_index_get (int index, int size)
 {
-  /// Negative indexes count from the back
-  if (index < 0)
-    {
-      /// Call adjust_index again to handle when
-      /// adjusted index is still negative
-      return adjust_index_get (size + index, size);
-    }
+    /// Negative indexes count from the back
+    if (index < 0)
+        {
+            /// Call adjust_index again to handle when
+            /// adjusted index is still negative
+            return adjust_index_get (size + index, size);
+        }
 
-  /// Index too big, adjust to after last element
-  if (index > size)
-    {
-      return size;
-    }
+    /// Index too big, adjust to after last element
+    if (index > size)
+        {
+            return size;
+        }
 
-  /// Index OK
-  return index;
+    /// Index OK
+    return index;
 }
 
 link_t **
 list_find (list_t * list, int index)
 {
-  link_t **c = &(list->first);
-  int counter = 0;
-  while (*c && index > counter)
-    {
-      c = &((*c)->next);
-      ++counter;
-    }
-  return c;			// elementet som ska komma efter indexet vi söker
+    link_t **c = & (list->first);
+    int counter = 0;
+    while (*c && index > counter)
+        {
+            c = & ((*c)->next);
+            ++counter;
+        }
+    return c;			// elementet som ska komma efter indexet vi söker
 }
 
 
 void
 make_singleton (list_t * list, elem_t elem)
 {
-  list->first = link_new (elem, NULL);
-  list->last = list->first;
+    list->first = link_new (elem, NULL);
+    list->last = list->first;
 }
 
 /// Inserts a new element at a given index.
@@ -136,35 +136,35 @@ make_singleton (list_t * list, elem_t elem)
 void
 list_insert (list_t * list, int index, elem_t elem)
 {
-  index = adjust_index_insert (index, list->size);
-  if (list->size == 0)
-    {
-      make_singleton (list, elem);
-    }
-  else
-    {
-      link_t **c = list_find (list, index);
-      // För insättning längst bak i listan
-      if (index == (int) list->size)
-	{
-	  link_t *new = link_new (list->copy_f (elem), NULL);
-	  (list->last)->next = new;
-	  list->last = new;
-	}
-      // Alla andra fall
-      else
-	{
-	  *c = link_new (list->copy_f (elem), (*c));
-	}
-    }
-  ++(list->size);
+    index = adjust_index_insert (index, list->size);
+    if (list->size == 0)
+        {
+            make_singleton (list, elem);
+        }
+    else
+        {
+            link_t **c = list_find (list, index);
+            // För insättning längst bak i listan
+            if (index == (int) list->size)
+                {
+                    link_t *new = link_new (list->copy_f (elem), NULL);
+                    (list->last)->next = new;
+                    list->last = new;
+                }
+            // Alla andra fall
+            else
+                {
+                    *c = link_new (list->copy_f (elem), (*c));
+                }
+        }
+    ++ (list->size);
 }
 
 bool
 empty_list (list_t * list)
 {
 
-  return (!list->first);
+    return (!list->first);
 }
 
 /// Inserts a new element at the end of the list.
@@ -177,22 +177,22 @@ empty_list (list_t * list)
 void
 list_append (list_t * list, elem_t elem)
 {
-  // Denna ser annorlunda ut än list_prepend eftersom index -1 just nu
-  // knuffar det sista elementet framför sig och alltså hamnar det nya
-  // elementet inte sist i listan.
-  if (list->size == 0)
-    {
-      // Corner case för tom lista
-      make_singleton (list, elem);
-    }
-  else
-    {
-      link_t *current_last = list->last;
-      link_t *new = link_new (elem, NULL);
-      current_last->next = new;
-      list->last = new;
-    }
-  ++(list->size);
+    // Denna ser annorlunda ut än list_prepend eftersom index -1 just nu
+    // knuffar det sista elementet framför sig och alltså hamnar det nya
+    // elementet inte sist i listan.
+    if (list->size == 0)
+        {
+            // Corner case för tom lista
+            make_singleton (list, elem);
+        }
+    else
+        {
+            link_t *current_last = list->last;
+            link_t *new = link_new (elem, NULL);
+            current_last->next = new;
+            list->last = new;
+        }
+    ++ (list->size);
 }
 
 /// Inserts a new element at the beginning of the list
@@ -206,7 +206,7 @@ void
 list_prepend (list_t * list, elem_t elem)
 {
 
-  list_insert (list, 0, elem);
+    list_insert (list, 0, elem);
 }
 
 /// Returns the element at a given index
@@ -217,41 +217,42 @@ list_prepend (list_t * list, elem_t elem)
 bool
 list_get (list_t * list, int index, elem_t * result)
 {
-  index = adjust_index_get (index, list->size);
-  link_t **c = list_find (list, index);
+    index = adjust_index_get (index, list->size);
+    link_t **c = list_find (list, index);
 
-  if (*c)
-    {
-      if (index < 0 && abs (index) <= (int) list->size)	// Negativa tal?
-	{
-	  *result = (*c)->elem;
-	  return true;
-	}
-      else if (abs (index) < (int) list->size)	// Detta ger fel när index är -1 och size är 1
-	{
-	  *result = (*c)->elem;
-	  return true;
-	}
-    }
-  return false;
+    if (*c)
+        {
+            if (index < 0 && abs (index) <= (int) list->size)	// Negativa tal?
+                {
+                    *result = (*c)->elem;
+                    return true;
+                }
+            else if (abs (index) < (int)
+                     list->size)	// Detta ger fel när index är -1 och size är 1
+                {
+                    *result = (*c)->elem;
+                    return true;
+                }
+        }
+    return false;
 }
 
 /// A convenience for list_get(list, 0, result)
 bool
 list_first (list_t * list, elem_t * result)
 {
-  return list_get (list, 0, result);
+    return list_get (list, 0, result);
 }
 
 /// A convenience for list_get(list, -1, result)
 bool
 list_last (list_t * list, elem_t * result)
 {
-  if (list->size > 0)
-    {
-      return list_get (list, -1, result);
-    }
-  return false;
+    if (list->size > 0)
+        {
+            return list_get (list, -1, result);
+        }
+    return false;
 }
 
 /// Returns the length of the list. It is undefined
@@ -263,7 +264,7 @@ list_last (list_t * list, elem_t * result)
 int
 list_length (list_t * list)
 {
-  return list->size;
+    return list->size;
 }
 
 /// Removes an element from a list.
@@ -279,19 +280,19 @@ list_length (list_t * list)
 void
 list_remove (list_t * list, int index, bool delete)
 {
-  link_t **c = list_find (list, index);
-  link_t *tmp = *c;
+    link_t **c = list_find (list, index);
+    link_t *tmp = *c;
 
-  if (*c)			// Kollar att pekare inte är NULL, vi kan köra på tomma listor
-    {
-      *c = (*c)->next;
-      if (delete)
-	{
-	  list->free_f (tmp->elem);
-	}
-      release (tmp);
-      --(list->size);
-    }
+    if (*c)			// Kollar att pekare inte är NULL, vi kan köra på tomma listor
+        {
+            *c = (*c)->next;
+            if (delete)
+                {
+                    list->free_f (tmp->elem);
+                }
+            release (tmp);
+            -- (list->size);
+        }
 
 }
 
@@ -302,13 +303,13 @@ list_remove (list_t * list, int index, bool delete)
 void
 list_delete (list_t * list, bool delete)
 {
-  int size = list_length (list);
+    int size = list_length (list);
 
-  for (int i = 0; i < size; ++i)
-    {
-      list_remove (list, 0, delete);
-    }
-  release (list);
+    for (int i = 0; i < size; ++i)
+        {
+            list_remove (list, 0, delete);
+        }
+    release (list);
 }
 
 /// Applies a function to all elements in a list in list order
@@ -320,17 +321,17 @@ list_delete (list_t * list, bool delete)
 bool
 list_apply (list_t * list, elem_apply_fun fun, void *data)
 {
-  bool result = false;
-  link_t **c = &(list->first);
-  while (*c)
-    {
-      if (fun ((*c)->elem, data))
-	{
-	  result = true;
-	}
-      c = &((*c)->next);
-    }
-  return result;
+    bool result = false;
+    link_t **c = & (list->first);
+    while (*c)
+        {
+            if (fun ((*c)->elem, data))
+                {
+                    result = true;
+                }
+            c = & ((*c)->next);
+        }
+    return result;
 }
 
 /// Searches for an element in a list
@@ -344,31 +345,31 @@ list_apply (list_t * list, elem_apply_fun fun, void *data)
 int
 list_contains (list_t * list, elem_t elem)
 {
-  int index = -1;
-  int counter = 0;
-  link_t **c = &(list->first);
+    int index = -1;
+    int counter = 0;
+    link_t **c = & (list->first);
 
-  while (*c)
-    {
-      //Om listan har en cmp-funktion
-      if (list->cmp_f)
-	{
-	  if (list->cmp_f ((*c)->elem, elem) == 0)
-	    {
-	      return counter;
-	    }
-	}
-      // Om listan inte har en cmp-funktion
-      else
-	{
-	  if ((*c)->elem.i == elem.i)	// Ful-lösning, hur jämföra en union med '=='?
-	    {
-	      return counter;
-	    }
-	}
+    while (*c)
+        {
+            //Om listan har en cmp-funktion
+            if (list->cmp_f)
+                {
+                    if (list->cmp_f ((*c)->elem, elem) == 0)
+                        {
+                            return counter;
+                        }
+                }
+            // Om listan inte har en cmp-funktion
+            else
+                {
+                    if ((*c)->elem.i == elem.i)	// Ful-lösning, hur jämföra en union med '=='?
+                        {
+                            return counter;
+                        }
+                }
 
-      c = &((*c)->next);
-      ++counter;
-    }
-  return index;
+            c = & ((*c)->next);
+            ++counter;
+        }
+    return index;
 }

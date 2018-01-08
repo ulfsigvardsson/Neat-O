@@ -12,10 +12,10 @@ typedef union element elem_t;
 ///
 union element
 {
-  int i;
-  uint u;
-  void *p;
-  float f;
+    int i;
+    uint u;
+    void *p;
+    float f;
 };
 
 /// Functions for handling genericity

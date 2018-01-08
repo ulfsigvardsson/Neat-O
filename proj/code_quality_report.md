@@ -1,33 +1,29 @@
-# Kodkavlitetrapport
+The group decided on using the GNU coding standard as it was thought to provide a clear block structure, increase readablity and be helpful when following a logical flow.
+All function names are therefore found in the leftmost column to facilitate navigation. The tool Artistic Style was used to ensure than the code confirmed to the GNU coding standards,
+and all source files are formatted with the flags
 
-Gruppen enades om att använda sig av **GNU coding standard** då denna ansågs tillhandahålla en tydlig uppdelning av block vilket skulle komma att underlätta
-både läsbarheten och att följa logiska flöden. Samtliga funktionsnamn återfinns därmed i den vänstraste kolumnen för att underlätta navigering.
-Verktyget **Artistic Style** har använts för att säkerställa att koden rättade sig efter GNU coding standards, samtliga källfiler formaterades med flaggorna
-```
---style=gnu: parenteser för funktionskroppar och strukter placeras i den vänstraste kolumnen.
+--style=gnu: function body parentheses and estructs are positioned in the leftmost column.
 
--xd padding innan en öppnande parentes
+-xd: padding before an opening parentheses.
 
--p: sätter blanksteg runt matematiska operatorer
+-p: puts a whitespace around mathematical operators.
 
--xC79: sätter den maximala radlängden till 70 tecken.
-```
-Dessutom använde gruppen sig av verktyget **indent** vars standardinställning är att indentera koden efter GNU coding standards.
+-xC79: sets the maximal line length to 79 characters.
 
-För att hålla hög läsbarhet har man försökt att använda sig av beskrivande makron på de ställen där koden annars skulle te sig skrymmande.
-En operation som ofta görs är konverteringen mellan objekt och metadata, vilket i ren kod ser ut som `((object_record_t*)(object) - 1)` samt `((obj)(record + 1))`.
-Koden är inte svår att förstå men blir utmattande att läsa upprepade gånger, därför används istället makrona`OBJECT_TO_RECORD`respektive `RECORD_TO_OBJECT`.
-Makron används även vid if-satser där villkoren annars riskerar att bli svåröverskådliga.
+Additionally, the team used the tool indent with its default setting indents code to conform to the GNU coding standards.
 
-Koden ämnar att underlätta underhåll och ändringar genom att exempelvis definiera egna format för datatyperna för referensantalet och storleken för ett objekt.
-På så sätt kan ändringar göras på en enda rad och få genomslag i resten av programmet.
-Ett undantag till detta är vid kontroll av overflow där kontrollen görs mot det literala maxvärdet av unsigned short.
+To maintain readability, we have aspired to use descriptive macros in places where code otherwise would appear bulky.
+An operation that is often performed is the convertion between data object and meta data, wich in literal code appears as ((object_record_t*)(object) - 1) and ((obj)(record + 1)).
+The code is in itself not particaluary difficult to understand but is exhausting to read repeatedly. Thus the macros OBJECT_TO_RECORD and RECORD_TO_OBJECT are used.
+Macros are also used in if statements when conditions would otherwise become difficult to grasp.
 
-Gruppen anser att den viktigaste aspekten för att hålla kod läsbar för andra gruppmedlemmar har varit att hålla den väldokumenterad.
-Vi har använt oss av Doxygen-standard för dokumentation av funktioner och dess argument, returvärden, strukter, definitioner etc. vilket vi anser har gjort koden begriplig också för de som inte har skrivit den.
-Att hålla funktioner relativt koncisa och därmed lättöverskådliga har också varit av hög prioritet, den längsta funktionen är   `allocate()` på 23 rader vilket får anses befogat
-givet dess centrala roll i biblioteket.
+The code aspire to facilitate maintainence and changes by, for example, define custom formats for the datatypes used for the reference count and size of an allocation.
+This way, changes can be made in a single line and impact the entire program.
+An exception to this is when overflow of the reference count variable is checked against the literal max value of an unsigned short.
 
-Vid pull requests har gruppen varit konsekventa med att kräva beskrivande variabel- och funktionsnamn. Enbokstavs-namn har inte accepterats.
+According to the team, the most important aspect to maintain readablity for all members has been well documented code.
+The Doxygen standard was used for documenting functions, structs, definitions etc. wich contributed to making the code graspable also for members not involved in writing the code.
+Keeping code block somewhat short and thereby easely surveyed was a top priority and the largest function turned out to be allocate() at 23 lines. This is justified given its central roll in the library.
 
-Teamet anser att konsekvensen av ovanstående har varit att läsning av kod har varit förhållandevis enkelt, bortsett från när stora mängder kod har committats.
+During pull requests the team has consistently demanded desciptive variable and function names. Names consisting of a single character har not been accepted.
+The team believes that the consequences of these factors combined is that the reading and understanding of code has been relatively painless, aside from commits of very large blocks of new code.

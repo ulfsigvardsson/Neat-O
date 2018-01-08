@@ -1,25 +1,27 @@
 4
 Banan
 En banan
-9
+12
 1
-A3
+A1
  20
 Hammare
 Ett verktyg
-30
+35
 1
-A1
- 10
+B2
+ 100
 Kaffe
 Svart kaffe
-15
+23
 1
-A2
- 30
-Skridskor
-Skrillor
-250
-1
-G6
- 13
+K4
+ 43
+TV
+TV
+3
+2
+F6
+ 34
+G7
+ 345

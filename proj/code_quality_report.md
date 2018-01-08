@@ -28,4 +28,4 @@ givet dess centrala roll i biblioteket.
 
 Vid pull requests har gruppen varit konsekventa med att kräva beskrivande variabel- och funktionsnamn. Enbokstavs-namn har inte accepterats.
 
-Konsekvenser.......
+Teamet anser att konsekvensen av ovanstående har varit att läsning av kod har varit förhållandevis enkelt, bortsett från när stora mängder kod har committats.

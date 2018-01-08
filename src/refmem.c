@@ -26,7 +26,7 @@
  * @def INITAIL_CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define INITIAL_CASCADE_LIMIT 1500000
+#define INITIAL_CASCADE_LIMIT 150000
 
 /* =================================
  * --------TYPE DEFINITIONS---------
@@ -45,7 +45,7 @@ typedef struct list list_t;	/*!< @typedef list_t  */
 static size_t cascade_limit = INITIAL_CASCADE_LIMIT;	/*!< The cascade limit with a default value.  */
 static size_t released_memory = 0;	/*!< Global variable tracking number of released bytes of a given cycle.  */
 static list_t *garbage = NULL;	/*!< List containing all dangling garbage objects. */
-static list_t *destructors = NULL;	/*!< List containing all destructor functions.  */
+static list_t *destruct_list = NULL;	/*!< List containing all destructor functions.  */
 static bool ignore_cascade_limit = false;	/*!< Global bool variable for bypassing the cascade limit in @see cleanup.  */
 
 /* =================================
@@ -80,8 +80,9 @@ struct list
 /**
  * @struct object_record
  * The object_record struct contains meta data consisting of the current amount of references
- * to a heap object along with an index number corresponding to a destructor function
- * in the @see destructors list.
+ * to a heap object along with an index number corresponding to a destructor function and the amount
+ * of bytes occupied by the data object.
+ * in the @see destruct_list list.
  */
 struct object_record
 {
@@ -112,7 +113,7 @@ free_link (link_t * link)
 }
 
 /**
- * Frees a links next pointer and then the link itself.
+ * Frees a lists first pointer and then the list itself.
  * @warning this function does not free the @see data struct member.
  *
  * @param link The link to free.
@@ -128,7 +129,7 @@ free_list (list_t * list)
 }
 
 /**
- * Finds the destructor function positioned at a given index in @see destructors.
+ * Finds the destructor function positioned at a given index in @see destruct_list.
  *
  * @param index Index to retrieve.
  * @return function1_t The destructor function at the given index.
@@ -136,7 +137,7 @@ free_list (list_t * list)
 function1_t
 get_destructor (unsigned char index)
 {
-  link_t *result = destructors->first;
+  link_t *result = destruct_list->first;
 
   for (unsigned char i = 0; i < index; i++)
     result = result->next;
@@ -168,7 +169,7 @@ find_link (list_t * list, obj data)
 }
 
 /**
- * Adds a destructor function to @see destructors if not already present
+ * Adds a destructor function to @see destruct_list if not already present
  * and returns its index in the list.
  *
  * @param destructor A destructor function.
@@ -177,7 +178,7 @@ find_link (list_t * list, obj data)
 unsigned char
 add_to_destructors (function1_t destructor)
 {
-  link_t **current = &(destructors->first);
+  link_t **current = &(destruct_list->first);
   int index = 0;
 
   if (!destructor)
@@ -194,25 +195,25 @@ add_to_destructors (function1_t destructor)
 
   *current = (link_t *) calloc (1, sizeof (link_t));
   (*current)->data = (function1_t *) destructor;
-  destructors->last = *current;
-  ++(destructors->size);
+  destruct_list->last = *current;
+  ++(destruct_list->size);
 
   return index;
 }
 
 /**
- * Initializes @see destructors to contain @see no_destructor as its only element.
+ * Initializes @see destruct_list to contain @see no_destructor as its only element.
  */
 void
 initialize_destructors ()
 {
-  destructors = (list_t *) calloc (1, sizeof (list_t));
+  destruct_list = (list_t *) calloc (1, sizeof (list_t));
   link_t *first = (link_t *) calloc (1, sizeof (link_t));
 
   first->data = (obj) no_destructor;
-  destructors->first = first;
-  destructors->last = first;
-  destructors->size = 1;
+  destruct_list->first = first;
+  destruct_list->last = first;
+  destruct_list->size = 1;
 }
 
 /**
@@ -262,12 +263,12 @@ set_garbage_pointers (object_record_t * record)
 void
 redirect_garbage_pointers (object_record_t * record)
 {
-  link_t **c = find_link (garbage, record);
+  link_t **current = find_link (garbage, record);
 
-  if (*c)
+  if (*current)
     {
-      link_t *temp = *c;
-      *c = (*c)->next;
+      link_t *temp = *current;
+      *current = (*current)->next;
 
       if (garbage->size == 1)
 	{
@@ -365,10 +366,8 @@ no_destructor (obj object)
 void
 initialize_garbage ()
 {
-  garbage = (list_t *) calloc (1, sizeof (list_t));
-  link_t *first = NULL;
-  garbage->first = first;
-  garbage->last = first;
+  garbage = (list_t *) calloc (1, sizeof (list_t)); 
+  garbage->first = garbage->last = NULL;
   garbage->size = 0;
 }
 
@@ -396,7 +395,7 @@ allocate (size_t bytes, function1_t destructor)
       cleanup_before_allocation (bytes);
     }
 
-  if (!destructors)
+  if (!destruct_list)
     initialize_destructors ();
 
   object_record_t *record =
@@ -463,7 +462,7 @@ allocate_array (size_t elements, size_t elem_size, function1_t destructor)
  * @return char* Pointer to the allocated string.
  */
 char *
-strdup2 (char *org)
+allocate_string (char *org)
 {
   char *result;
   int org_size = strlen (org);
@@ -559,5 +558,5 @@ shutdown ()
 {
   cleanup ();
   free (garbage);
-  free_list (destructors);
+  free_list (destruct_list);
 }

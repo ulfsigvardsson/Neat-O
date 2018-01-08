@@ -43,17 +43,16 @@ test_list ()
   link_t *first = allocate (sizeof (link_t), link_destructor);
   first->next = NULL;
   list->first = list->last = first;
-
-  list->first->data = strdup2 ("Test");
   retain (first);
+  list->first->data = allocate_string ("Test"); 
 
   link_t *current = first;
 
-  for (size_t i = 0; i < 10000; i++)
+  for (size_t i = 0; i < 10; i++)
     {
       link_t *link = allocate (sizeof (link_t), link_destructor);
-      link->data = strdup2 ("Test");
       retain (link);
+      link->data = allocate_string ("Test"); 
       link->next = NULL;
       current->next = link;
       current = link;
@@ -85,20 +84,18 @@ main (int argc, char *argv[])
   printf ("efter test_list\n");
 
 
-  /* int *arr = test_array(); */
+  int *arr = test_array();
 
-  /* for (int i= 0; i < 70000; i++) { */
-  /*   printf("Array[%d]: %d\n", i, arr[i]); */
-  /* } */
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 1; i++)
     {
       printf ("iteration nr: %d\n", i + 1);
-      char *temp = strdup2 ("foo");
+      char *temp = allocate_string ("foo");
       release (temp);
     }
-  //  release(arr);
-  printf ("Innan cleanup.\n");
+   release(arr);
+   printf ("Innan cleanup.\n");
   cleanup ();
+
   shutdown ();
 
 

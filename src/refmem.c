@@ -392,26 +392,31 @@ allocate (size_t bytes, function1_t destructor)
 
   if (garbage->size > 0)
     {
-      cleanup_before_allocation (bytes);
+      cleanup_before_allocation (abs(bytes));
     }
 
   if (!destruct_list)
     initialize_destructors ();
 
   object_record_t *record =
-    (object_record_t *) malloc (sizeof (object_record_t) + bytes);
+    (object_record_t *) malloc (sizeof (object_record_t) + abs(bytes));
 
   if (!record)
     return NULL;
 
   record->ref_count = 0;
   record->destr_index = add_to_destructors (destructor);
-  record->size = sizeof (object_record_t) + bytes;
+  record->size = sizeof (object_record_t) + abs(bytes);
 
   return RECORD_TO_OBJECT (record);
 }
 
-obj constructor_allocate_tester(size_t bytes, function1_t destructor, rc_format refc)
+/**
+ * Only made for unit testing purposes.
+ * Basically an allocate where you can decide the starting amount of references.
+ */
+obj
+constructor_allocate_tester(size_t bytes, function1_t destructor, rc_format refc)
 {
  ignore_cascade_limit = false;
 
@@ -465,7 +470,6 @@ cleanup_before_allocation (size_t bytes)
 /**
  * Allocates space for an array an initializes each byte to 0. Equivalent to 'calloc'.
  *
-<<<<<<< HEAD
  * @param elements The number of elements in the array.
  * @param elem_size The size of each array element.
  * @param destructor Function pointer to the destructor.

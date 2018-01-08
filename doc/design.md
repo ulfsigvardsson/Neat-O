@@ -25,18 +25,30 @@ The header file consists of the following functions.
 ![Header](header.png)
 
 ## retain
+### header of retain
 ```c
 void retain(obj);
 ```
+### usage of retain
+Retain given an object is used in order to increase the objects reference count by one.
+Be aware of Overflow of the reference count if this happens it will cause the program to terminate.
+
 ## release
+### header of retain
 ```c
 void release(obj);
 ```
+### usage of release
+Release given an object is used to decrease the objects reference count by one.
+If this results in the objects reference count hitting 0 the object will depending on the cascade limit either be deallocated or be put in garbage and wait until the program has resources to deallocate the object.
 
 ## rc
+### header of rc
 ```c
 rc_format rc(obj);
 ```
+### usage of rc
+
 
 ## allocate
 ```c

@@ -24,7 +24,7 @@ This way, changes can be made in a single line and impact the entire program.
 An exception to this is when overflow of the reference count variable is checked against the literal max value of an unsigned short.
 
 According to the team, the most important aspect to maintain readablity for all members has been well documented code.
-The Doxygen standard was used for documenting functions, structs, definitions etc. wich contributed to making the code graspable also for members not involved in writing the code.
+The Doxygen standard was used for documenting all functions, structs, definitions etc. wich contributed to making the code graspable also for members not involved in writing the code.
 Keeping code block somewhat short and thereby easely surveyed was a top priority and the largest function turned out to be `allocate()` at 23 lines. This is justified given its central roll in the library.
 
 During pull requests the team has consistently demanded desciptive variable and function names. Names consisting of a single character har not been accepted.

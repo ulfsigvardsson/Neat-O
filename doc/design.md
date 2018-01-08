@@ -2,26 +2,32 @@
 Here follows an introductionary description of the design and functionality of the reference counting garbage collector implemented
 by the project group Gulhämplingarna.
 
-## Overview
+## Table of Content
+# Table of Contents
+[Useful Info](#Useful Info)
+	* [Format explanations](#Format explanations)
+		* [obj](#obj)
+		* [function1_t](#function1_t)
+		* [rc_format](#rc_format)
+		* [size_format](#size_format)
+	* [Type Definitions](#Type Definitions)
+	* [Function](#Function Prototypes)
 
-
-***
-
-# Useful info
+# Useful Info
 ## Format explanations
 ### obj
 ### function1_t
 ### rc_format
 ### size_format
 
-## Type definitions
+## Type Definitions
 ```c
  typedef void *obj;
  typedef void(*function1_t)(obj);
  typedef unsigned short rc_format;
  typedef unsigned short size_format;
 ```
-## Function prototypes
+## Function Prototypes
 ```c
  void retain(obj);
  void release(obj);
@@ -35,8 +41,6 @@ by the project group Gulhämplingarna.
  void shutdown();
  char *strdup2(char*);
 ```
-
-***
 
 # Usage of Functions
 ## Retain

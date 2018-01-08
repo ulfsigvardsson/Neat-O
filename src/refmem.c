@@ -1,5 +1,6 @@
 /*refmem.c -- automatic garbage collector using reference counting.*/
 #include "refmem.h"
+#include <stdio.h>
 
 /* =================================
  * -------------MACROS--------------
@@ -405,6 +406,34 @@ allocate (size_t bytes, function1_t destructor)
     return NULL;
 
   record->ref_count = 0;
+  record->destr_index = add_to_destructors (destructor);
+  record->size = sizeof (object_record_t) + bytes;
+
+  return RECORD_TO_OBJECT (record);
+}
+
+obj constructor_allocate_tester(size_t bytes, function1_t destructor, rc_format refc)
+{
+ ignore_cascade_limit = false;
+
+  if (!garbage)
+    initialize_garbage ();
+
+  if (garbage->size > 0)
+    {
+      cleanup_before_allocation (bytes);
+    }
+
+  if (!destruct_list)
+    initialize_destructors ();
+
+  object_record_t *record =
+    (object_record_t *) malloc (sizeof (object_record_t) + bytes);
+
+  if (!record)
+    return NULL;
+
+  record->ref_count = refc;
   record->destr_index = add_to_destructors (destructor);
   record->size = sizeof (object_record_t) + bytes;
 

@@ -13,7 +13,6 @@ int different_cl[] = {-999, -2, -1, 0, 1, 2, 999 }; /* !< The smallest and large
 int upper_cl[] = {-998, -1, 0, 1, 2, 3, 1000};
 int lower_cl[] = {-1000, -3, -2, -1, 0, 1, 998};
 
-
 char *different_strings[] = {"Hej", "Albin", "Ulf", "Sebastian", "Marcus", "Oskar", "Odd" };
 
 
@@ -44,6 +43,7 @@ void retain_test(void)
       retain(tmp_object);
       object_record_t *tmp_record = OBJECT_TO_RECORD(tmp_object);
       CU_ASSERT_TRUE((tmp_record->ref_count) == upper_rc[i]);
+
     }
 }
 
@@ -79,7 +79,6 @@ void rc_test(void)
 /**
  * Test for the allocate function
  */
-
 void allocate_test(void)
 {
   for (int i = 0; i < 7; i++)
@@ -88,7 +87,6 @@ void allocate_test(void)
       CU_ASSERT_TRUE(sizeof(tmp) == 8);
     }
 }
-
 
 /**
  * Test for the allocate_array function
@@ -119,7 +117,6 @@ void allocate_string_test(void)
     }
   
 }
-
 
 /**
  * Test for the deallocate function
@@ -170,7 +167,6 @@ void cleanup_test(void)
   cleanup();
   CU_ASSERT_TRUE(garbage->size == 0 && rc(tmp2) == 1);
 }
-
 
 /**
  * Test for the shutdown function
@@ -228,4 +224,3 @@ int main(int argc, char *argv[])
 
   return CU_get_error();
 }
-

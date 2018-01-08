@@ -1,4 +1,3 @@
-/*refmem.c -- automatic garbage collector using reference counting.*/
 #include "refmem.h"
 #include <stdio.h>
 
@@ -466,6 +465,7 @@ cleanup_before_allocation (size_t bytes)
 /**
  * Allocates space for an array an initializes each byte to 0. Equivalent to 'calloc'.
  *
+<<<<<<< HEAD
  * @param elements The number of elements in the array.
  * @param elem_size The size of each array element.
  * @param destructor Function pointer to the destructor.
@@ -482,6 +482,7 @@ allocate_array (size_t elements, size_t elem_size, function1_t destructor)
     return NULL;
 
   return memset (object, 0, total);
+
 }
 
 /**
@@ -589,3 +590,4 @@ shutdown ()
   free (garbage);
   free_list (destruct_list);
 }
+

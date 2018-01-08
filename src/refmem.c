@@ -8,13 +8,13 @@
 
 /**
  * @def ALLOCATION_SPACE_REQUIRED
- * Determines if the amount of bytes for a pending allocation is greater that the amount of deallocated space.  
+ * Determines if the amount of bytes for a pending allocation is greater that the amount of deallocated space.
  */
 #define ALLOCATION_SPACE_REQUIRED released_memory < bytes
 
 /**
  * @def BELOW_CASCADE_LIMIT
- * Determines if the cascade limit has been reached.  
+ * Determines if the cascade limit has been reached.
  */
 #define BELOW_CASCADE_LIMIT get_cascade_limit() > released_memory
 
@@ -402,6 +402,7 @@ obj
 allocate (size_t bytes, function1_t destructor)
 {
     ignore_cascade_limit = false;
+    bytes = abs (bytes);
 
     if (!garbage)
         initialize_garbage ();
@@ -427,32 +428,33 @@ allocate (size_t bytes, function1_t destructor)
     return RECORD_TO_OBJECT (record);
 }
 
-obj constructor_allocate_tester(size_t bytes, function1_t destructor, rc_format refc)
+obj constructor_allocate_tester (size_t bytes, function1_t destructor,
+                                 rc_format refc)
 {
- ignore_cascade_limit = false;
+    ignore_cascade_limit = false;
 
-  if (!garbage)
-    initialize_garbage ();
+    if (!garbage)
+        initialize_garbage ();
 
-  if (garbage->size > 0)
-    {
-      cleanup_before_allocation (bytes);
-    }
+    if (garbage->size > 0)
+        {
+            cleanup_before_allocation (bytes);
+        }
 
-  if (!destruct_list)
-    initialize_destructors ();
+    if (!destruct_list)
+        initialize_destructors ();
 
-  object_record_t *record =
-    (object_record_t *) malloc (sizeof (object_record_t) + bytes);
+    object_record_t *record =
+        (object_record_t *) malloc (sizeof (object_record_t) + bytes);
 
-  if (!record)
-    return NULL;
+    if (!record)
+        return NULL;
 
-  record->ref_count = refc;
-  record->destr_index = add_to_destructors (destructor);
-  record->size = sizeof (object_record_t) + bytes;
+    record->ref_count = refc;
+    record->destr_index = add_to_destructors (destructor);
+    record->size = sizeof (object_record_t) + bytes;
 
-  return RECORD_TO_OBJECT (record);
+    return RECORD_TO_OBJECT (record);
 }
 
 /**

@@ -1,10 +1,16 @@
 FLAGS= -Wall -g
 SOURCEDIR = ../src/
 CC = gcc
+RM = -rm -f
 
+.PHONY: clean
 
-test: 	test.c refmem.o
-	$(CC) $(FLAGS) $^ -o $@ -lcunit 
+test: compile
+	./test
 
-refmem.o: $(SOURCEDIR)refmem.c $(SOURCEDIR)refmem.h
-	$(CC) $(FLAGS) $(SOURCEDIR)refmem.c -c
+compile: test.c
+	$(CC) $(FLAGS) $^ -o test -lcunit 
+
+clean:
+	$(RM) test
+	$(RM) refmem.o

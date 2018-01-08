@@ -1,5 +1,5 @@
 The group decided on using the **GNU coding standard** as it was thought to provide a clear block structure, increase readablity and be helpful when following a logical flow.
-All function names are therefore found in the leftmost column to facilitate navigation. The tool Artistic Style was used to ensure than the code confirmed to the GNU coding standards,
+All function names are therefore found in the leftmost column to facilitate navigation. The tool **Artistic Style** was used to ensure than the code confirmed to the GNU coding standards,
 and all source files are formatted with the flags
 
 ```

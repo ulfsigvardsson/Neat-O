@@ -10,10 +10,15 @@
  Sebastian Lhådö    selh2555@student.uu.se       8/12 -17 -- 9/1 -18                  35.75
  Ulf Sigvardsson    ulsi6345@student.uu.se       5/12 -17 -- 9/1 -18                  67.82
 ```     
+
+## Time spent, team
+
 ![Tidskarta](Tidskarta.png)
 
+## Time spent, individual
 
 ![Tidskarta](Tidskarta2.PNG) 
+
 # 2 Quantification
 The project started on 06/12-17 and it ended on 09/01-18. Since we used Kanban we decided that we would not use sprints but would rather work on something until it ended so either we had 0 sprints or 1 sprint depending on how you view it.
 Our main scripts with the code for the garbage collector has 641 lines of code.

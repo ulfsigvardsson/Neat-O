@@ -15,6 +15,7 @@ Macros are also used in if statements when conditions would otherwise become dif
 
 ## Tests
 
+The code is tested with unit tests as well as with integration tests looking for memory leaks. The passing of these tests would indicate that the code does what we intended.
 
 ## Code standard
 

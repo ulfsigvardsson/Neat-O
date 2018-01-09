@@ -787,8 +787,16 @@ save_db (tree_t * db, char *path)
 void
 stripline (char *c)
 {
-    char *x = strchr (c, '\n');
-    *x = '\0';
+  if (c)
+    {
+      char *x = strchr (c, '\n');
+      if (x)
+        {
+          *x = '\0';
+        }
+
+    }
+
 }
 
 item_t *

@@ -48,3 +48,23 @@ Vi började projektet mycket väl genom att lägga upp en bra planering tillsamm
 De största problemen som vi stött på i vår grupp är att vi ej setts tillräckligt i person under projektets gång! Detta har varit en bieffekt av att folk rest hem under julledigheten, vilket har gjort att vi fått förlita oss på Slack kommunikation & möten över internet. Något som inte fungerat alls så bra som jag hoppats, folk har valt att inte dyka upp och en i gruppen har valt att helt ignorera alla våra försök till kommunikation under julledigheten. Trots att denna individ ignorerat all försök till kommunikation under julledigheten har vi givit honom möjligheten att fortfarande utföra sina arbetsuppgifter, det var inte förens han valde att ignorera oss även efter julledigheten & missa ett obligatoriskt möte som vi alla bestämde oss för att ha. Då gjorde vi som ett team det gemensamma beslutet att rösta om personen i säga skulle få vara kvar i projektet eller om vi väljer att fortsätta utan honom.
 
 Det positiva som jag upplevt under projektets gång är garanterat att vi valt att köra parprogrammering mot hela projektet! Då jag har kommit bra överens med min programmerings partner och vi båda har engagerat oss för att verkligen skriva bra och väldokumenterad kod. Par programmeringen har inte bara varit positiv det har gjort att vi som grupp fått lov att skriva deviations mot issue logs i github. Detta för att vi tagit allt med vår respektive programmerings partner.
+
+
+Odd Jensen
+
+**How do I function in a team**  
+I tend to be quite passive in a team, especially if I feel like I am not the one with most experience.
+But overall I think I work pretty good in a team, because of my passive attitude, I listen to all other members of the team, but it can also be a weakness and cause me to be so passive that I don't really contribute so much th the team.
+
+**What motivates me? What demotivates me?**  
+The biggest motivator for me in any type of project is a feeling of progress, and on the flip side of that, my biggest demotivator is when the project have stalled or you don't really know what to work on next.
+
+**How good am I at estimating how long a task will take? What is the process that produce my estimations?**  
+I am really bad at estimating work time for my tasks, mostly it comedowns to inexperience, since I haven't done a certain task before, I don't know how long it will take.
+
+**Do you gain any thing by working in a group, or do you prefer to work alone?**  
+I think I prefer working in pairs or solo before working in bigger groups, but I think it’s because I have had bad experiences working in group in school projects before, where it almost never worked out well to work in a group.
+
+**How do you best retain knowledge**  
+I think I learn best from first listening/seeing and the doing, but in group project like this is feels more like learn by failing, which can be really demotivating sometimes.
+

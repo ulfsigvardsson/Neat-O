@@ -14,3 +14,5 @@ An other thing that wasn't used during the process of this project is the use of
 The biggest bug that occured during the work on the implementation was a large memoryleakage that was hard to find. Even when only one int was allocated and directly freed the program still leaked thousands of bytes. This was later discovered to be a forgotten line of `printf` that has been used to find another bug.
 
 Another bug that was faced by the test group was that `get_cascade_limit()` always returned the initial value of the cascade limit. This led to us thinking that `set_cascade_limit()` was not working correctly and quite a lot of time was put into trying to fix `set_cascade_limit()`. This bug was however due to `get_cascade_limit()` resetting the cascade limit to the initial value.
+
+![Coverage](coverage.png)

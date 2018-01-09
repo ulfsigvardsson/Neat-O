@@ -1,7 +1,1 @@
-1
-Sopkvast
-En röd sopkvast
-100
-1
-A8
- 10
+0

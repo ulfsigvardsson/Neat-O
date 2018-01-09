@@ -36,7 +36,7 @@
  * @def INITAIL_CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define INITIAL_CASCADE_LIMIT 150000
+#define INITIAL_CASCADE_LIMIT 800000
 
 /* =================================
  * --------TYPE DEFINITIONS---------
@@ -433,7 +433,8 @@ allocate (size_t bytes, function1_t destructor)
  * Basically an allocate where you can decide the starting amount of references.
  */
 obj
-constructor_allocate_tester(size_t bytes, function1_t destructor, rc_format refc)
+constructor_allocate_tester (size_t bytes, function1_t destructor,
+                             rc_format refc)
 {
     ignore_cascade_limit = false;
 
@@ -608,6 +609,8 @@ shutdown ()
 {
     cleanup ();
     free (garbage);
+    garbage = NULL;
     free_list (destruct_list);
+    destruct_list = NULL;
 }
 

@@ -35,4 +35,4 @@ format:
 	$(shell find . -name "*.c" -o -name "*.h" | xargs astyle --style=gnu -xd -p -xC79)
 
 memtest:
-	$(MAKE) valgrind -C $(SOURCEDIR)
+	$(MAKE) memtest -C $(TESTDIR)

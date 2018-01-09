@@ -45,17 +45,17 @@ test_list ()
     list->first = list->last = first;
     retain (first);
 
-    assert(rc(first) == 1);
+    assert (rc (first) == 1);
 
     list->first->data = allocate_string ("Test");
 
     link_t *current = first;
 
-    for (size_t i = 0; i < 10000000; i++)
+    for (size_t i = 0; i < 1000000; i++)
         {
             link_t *link = allocate (sizeof (link_t), link_destructor);
             retain (link);
-            assert(rc(first) == 1);
+            assert (rc (first) == 1);
             link->data = allocate_string ("Test");
             link->next = NULL;
             current->next = link;
@@ -63,7 +63,7 @@ test_list ()
             list->last = link;
         }
     retain (list);
-    assert(rc(first) == 1);
+    assert (rc (first) == 1);
     release (list);
 
 }
@@ -84,19 +84,19 @@ test_array ()
 int
 main (int argc, char *argv[])
 {
-  test_list ();
-  int *arr = test_array();
+    test_list ();
+    int *arr = test_array();
 
-  for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 100; i++)
         {
-          char *temp = allocate_string ("foo");
-          assert(rc(temp) == 1);
-          release (temp);
+            char *temp = allocate_string ("foo");
+            assert (rc (temp) == 1);
+            release (temp);
         }
 
-  release (arr);
+    release (arr);
 
-  cleanup ();
-  shutdown ();
-  return 0;
+    cleanup ();
+    shutdown ();
+    return 0;
 }

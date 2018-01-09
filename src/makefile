@@ -19,6 +19,7 @@ clean:
 	$(RM) *.*~
 	$(RM) *^#*
 	$(RM) main
+	$(RM) *.orig
 
 valgrind: main
 	valgrind --leak-check=full ./main

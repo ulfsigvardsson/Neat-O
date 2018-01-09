@@ -433,7 +433,8 @@ allocate (size_t bytes, function1_t destructor)
  * Basically an allocate where you can decide the starting amount of references.
  */
 obj
-constructor_allocate_tester(size_t bytes, function1_t destructor, rc_format refc)
+constructor_allocate_tester (size_t bytes, function1_t destructor,
+                             rc_format refc)
 {
     ignore_cascade_limit = false;
 
@@ -608,6 +609,8 @@ shutdown ()
 {
     cleanup ();
     free (garbage);
+    garbage = NULL;
     free_list (destruct_list);
+    destruct_list = NULL;
 }
 

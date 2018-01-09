@@ -150,18 +150,34 @@ Same functions as the original strdup but uses our memory handler in order to al
 # Indept explanation of Functions <a name = "exp-func"></a>
 
 ## Retain <a name = "retain-exp"></a>
-
+The idea with retain is to let our program know the user is using this specific object x amount of times. It increases the object_records reference count by one for each call.
 ## Release <a name = "release-exp"></a>
-
+Releaseing an object is depending on the object_records reference count & the cascade limit. If the object_record reference count is non-zero after decreasing the reference count by one release will not deallocate the object.
+However if the object reference count hits zero and still have bytes left to free / ignore_cascade_limit has the value true, our released_memory will increase by the object_records size and our object will be deallocated.
+However if the cascade_limit is reached our object will be moved to our list of garbage!
 ## Rc <a name = "rc-exp"></a>
+Rc returns a objects reference count, the idea by using a reference count is for us hold the information of how many times the client are in use of the object in our spectrum.
+Beware that our reference count can reach it's upper limit or lower limit and cause a overflow and throw out and terminate + give exception!
 
 ## Allocate <a name = "allocate-exp"></a>
+Allocate are in charge of allocating a specific size of bytes on our heap.
+
+The allocation process starts by initializing a garbage list if there currently is none. If there already is one allocated with a size larger than 0 meaning we have some pointers to objects whoms reference count is zero, we are deallocating these objects before continuing with our current allocation.
+
+Later the initialization of our destructors are done and lastly the record is initialized.
 
 ## Allocate_array <a name = "allocate_array-exp"></a>
+Does the same as Allocate - see Allocate.
+
+The addition to allocate it initializes each byte with a value of 0, the equivilant to 'Calloc'
 
 ## Deallocate <a name = "deallocate-exp"></a>
+Deallocation is the process of telling the system our program no longer need this allocation the function assures the object to be deallocated has a reference count equal to zero and is not a null pointer.
+
+Since the deallocation is done to garbage it redirects the garbage_pointers and later on gets the objects destructor function and destroys the object using the destructor given during the allocation.
 
 ## Set_cascade_limit <a name = "set_casc-exp"></a>
+Setting the cascade limit is done by the client in order to optimize the effectivness of our memory handling. Cascade limit is initilized at the value of XXX
 
 ## Get_cascade_limit <a name = "get_casc-exp"></a>
 

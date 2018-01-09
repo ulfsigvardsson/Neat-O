@@ -1,4 +1,4 @@
-#include "refmem.h"
+#include "../src/refmem.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,6 +44,9 @@ test_list ()
     first->next = NULL;
     list->first = list->last = first;
     retain (first);
+    
+    assert(rc(first) == 1);
+
     list->first->data = allocate_string ("Test");
 
     link_t *current = first;
@@ -52,6 +55,7 @@ test_list ()
         {
             link_t *link = allocate (sizeof (link_t), link_destructor);
             retain (link);
+            assert(rc(first) == 1);
             link->data = allocate_string ("Test");
             link->next = NULL;
             current->next = link;
@@ -59,6 +63,7 @@ test_list ()
             list->last = link;
         }
     retain (list);
+    assert(rc(first) == 1);
     release (list);
 
 }
@@ -79,23 +84,19 @@ test_array ()
 int
 main (int argc, char *argv[])
 {
-    printf ("innan test_list\n");
-    test_list ();
-    printf ("efter test_list\n");
+  test_list ();
+  int *arr = test_array();
 
-
-    int *arr = test_array();
-
-    for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 100; i++)
         {
-            printf ("iteration nr: %d\n", i + 1);
-            char *temp = allocate_string ("foo");
-            release (temp);
+          char *temp = allocate_string ("foo");
+          assert(rc(temp) == 1);
+          release (temp);
         }
-    release (arr);
-    printf ("Innan cleanup.\n");
-    cleanup ();
 
-    shutdown ();
-    return 0;
+  release (arr);
+  
+  cleanup ();
+  shutdown ();
+  return 0;
 }

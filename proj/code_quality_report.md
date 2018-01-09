@@ -15,6 +15,7 @@ Macros are also used in if statements when conditions would otherwise become dif
 
 ## Tests
 
+The code is tested with unit tests as well as with integration tests looking for memory leaks. The passing of these tests would indicate that the code does what we intended.
 
 ## Code standard
 
@@ -38,6 +39,7 @@ Additionally, the team used the tool **indent** with its default setting indents
 
 According to the team, the most important aspect to maintain readablity for all members has been well documented code.
 The Doxygen standard was used for documenting all functions, structs, definitions etc. wich contributed to making the code graspable also for members not involved in writing the code.
+
 
 The team believes that the consequences of these factors combined is that the reading and understanding of code has been relatively painless, aside from commits of very large blocks of new code.
 

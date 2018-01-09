@@ -1,10 +1,31 @@
 FLAGS= -Wall -g
-SOURCEDIR = ../src/
+SRCDIR = ../src/
 CC = gcc
+RM = -rm -f
+
+.PHONY: clean
+
+run: main
+	./main
+
+integration: memtest.c refmem.o
+	$(CC) $(CFLAGS) $? -o $@
+
+refmem.o: $(SRCDIR)refmem.c $(SRCDIR)refmem.h
+	$(CC) $(FLAGS) $(SRCDIR)refmem.c -c
+
+test: compile
+	./test
+
+compile: test.c
+	$(CC) $(FLAGS) $^ -o test -lcunit 
+
+clean:
+	$(RM) test
+	$(RM) refmem.o
+	$(RM) integration
+	$(RM) *.orig
 
 
-test: 	test.c refmem.o
-	$(CC) $(FLAGS) $^ -o $@ -lcunit 
-
-refmem.o: $(SOURCEDIR)refmem.c $(SOURCEDIR)refmem.h
-	$(CC) $(FLAGS) $(SOURCEDIR)refmem.c -c
+memtest: integration
+	valgrind --leak-check=full ./integration

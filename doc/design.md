@@ -29,7 +29,7 @@ To allocate an object one calls `allocate()` with the amount of bytes needed to 
 By default the reference count has a value of zero when initialized. The amount of metadata allocated is 6 bytes per allocation. The library allocates some space for its internal structures but assuming that no allocations below 8 bytes are made, the library carries a maximal overhead less than twice the actual data allocated as the number of allocations grow.
 
 ## Release & retain <a name = "retain"></a>
-`release` and `retain` are used to decrease and increase an object's reference counter.
+`release()` and `retain()` are used to decrease and increase an object's reference counter.
 If an object’s reference counter hits zero by calling release, the object is automatically freed and removed from memory. If the cascade limit has already been reached, the object is added to the list of outstanding frees.
 
 Since the data type holding an objects reference count is an unsigned short, the maximum number of references to an object is 65.535. Overstepping this limit will crash the program since it is not reasonable to continue as the overflow will result in a zero reference count.

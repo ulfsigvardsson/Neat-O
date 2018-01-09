@@ -3,9 +3,9 @@
 ## 1.1 Participant list
 ```
  Name               email                        active dates
- Albin Barchéus     alba6827@student.uu.se       5/12 -17 -- 1/1 -18
- Markus Sjöholm     masj8314@student.uu.se       8/12 -17 -- 1/1 -18
- Odd Jensen         odje5470@student.uu.se       8/12 -17 -- 1/1 -18
+ Albin Barchéus     alba6827@student.uu.se       5/12 -17 -- 9/1 -18
+ Markus Sjöholm     masj8314@student.uu.se       8/12 -17 -- 9/1 -18
+ Odd Jensen         odje5470@student.uu.se       8/12 -17 -- 9/1 -18
  Oskar Lidin        osli7853@student.uu.se       8/12 -17 -- 1/1 -18
  Sebastian Lhådö    selh2555@student.uu.se       8/12 -17 -- 9/1 -18
  Ulf Sigvardsson    ulsi6345@student.uu.se       5/12 -17 -- 9/1 -18

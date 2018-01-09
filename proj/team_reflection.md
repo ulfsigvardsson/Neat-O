@@ -2,13 +2,13 @@
 
 ## 1.1 Participant list
 ```
- Name               email                        active dates
- Albin Barchéus     alba6827@student.uu.se       5/12 -17 -- 9/1 -18
- Markus Sjöholm     masj8314@student.uu.se       8/12 -17 -- 9/1 -18
- Odd Jensen         odje5470@student.uu.se       8/12 -17 -- 9/1 -18
- Oskar Lidin        osli7853@student.uu.se       8/12 -17 -- 1/1 -18
- Sebastian Lhådö    selh2555@student.uu.se       8/12 -17 -- 9/1 -18
- Ulf Sigvardsson    ulsi6345@student.uu.se       5/12 -17 -- 9/1 -18
+ Name               email                        active dates              Total time spent (in hours)
+ Albin Barchéus     alba6827@student.uu.se       5/12 -17 -- 9/1 -18                  30
+ Markus Sjöholm     masj8314@student.uu.se       8/12 -17 -- 9/1 -18                  15.9
+ Odd Jensen         odje5470@student.uu.se       8/12 -17 -- 9/1 -18                  17.75
+ Oskar Lidin        osli7853@student.uu.se       8/12 -17 -- 1/1 -18                  4.6
+ Sebastian Lhådö    selh2555@student.uu.se       8/12 -17 -- 9/1 -18                  35.75
+ Ulf Sigvardsson    ulsi6345@student.uu.se       5/12 -17 -- 9/1 -18                  67.82
 ```
 # 2 Quantification
 The project started on 06/12-17 and it ended on 09/01-18. Since we used Kanban we decided that we would not use sprints but would rather work on something until it ended so either we had 0 sprints or 1 sprint depending on how you view it.

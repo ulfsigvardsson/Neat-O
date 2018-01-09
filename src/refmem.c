@@ -36,7 +36,7 @@
  * @def INITAIL_CASCADE_LIMIT
  * Global constant for the default value of the cascade limit.
  */
-#define INITIAL_CASCADE_LIMIT 150000
+#define INITIAL_CASCADE_LIMIT 800000
 
 /* =================================
  * --------TYPE DEFINITIONS---------

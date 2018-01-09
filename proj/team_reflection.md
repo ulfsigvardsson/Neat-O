@@ -39,7 +39,7 @@ google.questionaire was later dropped due to feedback concerning its effectivene
 
 We don't think that we were missing any tools in particular.
 
-# 5 Communication etc.
+# 5 Communication, Cooperation and Coordination
 Everyone in the group feels like we have had decent communication in some aspects and that we have been lacking in other ways. We have been using slack as our major channel of communications but we feel that more in person communication would have been preferred. We feel that slack is great in many ways but you never know, due to how life is, when the person/people you are
 trying to get a hold on will be able to see and/or answer what you wrote. This is one of the reasons why in person meetings are great due to how you definitely know that the people there will be able to respond to what you have to say. 
 
@@ -50,12 +50,12 @@ done due to some miscommunication and bad cooperation between some parts of the 
 We all met up for pseudo-weekly meetings where we had democratic votes for all the major decisions. For smaller decision we merely had a conversation on slack where everyone voiced their view and then we went with what the majority wanted. 
 
 
-# 6 Work breakdown
+# 6 Work Breakdown Structure
 The tasks were divided in such a manner that we all discussed the problems and then either chose or were delegated some work (depending on if a person attended a meeting) making sure that we were in small subgroups that were to specialize their attention towards one part of the project. The implementation subgroup were using pair programming and felt that it worked surprisingly well for them! Some were very sceptical to begin with and were quite turned in their view of this work method. 
 
 For tasks that were larger than others we split it up so more people worked on those than on the small things. The estimation of time for a task can be very tricky when you are unexperienced in the matter, as we are, so for us it was often approximating and guessing in a broad way.
 
-# 7 Quality insurance
+# 7 Quality Assurance
 We feel that the spec for the code is quite clear but when it comes to the specs for the project in general it is very difficult to sometimes understand what is asked of us. Some things are hidden away, not exactly clear or just not mentioned enough. We made sure to read everything a few times just to make sure we didn't miss things.
 
 We wanted to write our unit tests as soon as possible and make sure that our code always succeeded on them to make sure that every new implementation worked. We used a different test-file for our integration tests to make sure that we never had non-working code, but in all honesty this was a makeshift solution while waiting for the unit tests. We, due to the unit tests not beeing completed until the final days of the project, didn't do regression testing which we regret not having done. In retrospective we should have put a clear time constraint on all tasks to prevent them from lingering.

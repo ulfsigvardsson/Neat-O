@@ -1,6 +1,6 @@
 # Individual reflection
 
-Albin Barchéus
+### Albin Barchéus
 
 I think I work well in a team. I know that I in some manners are not a perfect team member but I think that overall I am good for a group. I tend to want to take on a leading role in the group and I hope that I do a good job at it. I do have a pattern that I should try to change and that is to work quite little at the start of a project and then work a lot near the end. This usually leads to pressure being put upon myself and the rest of the group.
 
@@ -13,7 +13,7 @@ I think it has gone well to log the time. We had a spreadsheet where it was very
 My biggest fail was easily my planning of the work. I should have started with the bulk of the project much earlier than I did. My biggest win was probably not the smartest thing but it just made me so happy when I did it. I was sitting bug-hunting with the unit tests and couldn't for my life understand why a test didn't work so I removed a small piece of code which seemed dumb and everything got fixed.
 
 
-Markus Sjöholm
+### Markus Sjöholm
 
 When I work in group project I tend to not be the one that is leading the group. However I do like to be involved in decisions regarding the project. I like working in a group because I like to bounce ideas off somebody in order to develop.  But the group can't be too big so that the divided work doesn't get too small. My strengths when working in a group is usualy that I always get the work that is handed to me done. However, during this project , I have had some non school related work that has stoped me from deliver as planed. I hve tried to be clear with the group when things didnät go as planed for me.    
 
@@ -22,7 +22,7 @@ During this project have I learnt a lot about working on a project together with
 The biggest problem that I faced with this project is that I didn't find the time that I wanted to but in the effort I wanted. I the end this doesn't only make me suffer but also the group. Luckily this didn't have that big of an impact on the group this time but it is something that I will try to fix for my next group work.     
 
 
-Ulf Sigvardsson
+### Ulf Sigvardsson
 
 I'd like to see myself as a dynamic team player, one that is able to listen and adapt, I take great pride in what I deliver and is usually productive and reliable. This can also be to a disadvantage to the team as I somtimes don't trust tasks to be done by other team members and refrain from including them in a problem. I should delegate more to fellow team members and keep them more in the loop.
 
@@ -39,7 +39,7 @@ My biggest "win" was using static lists for garbage pointers and destructor func
 I feel that I have learned a lot of Git during the project, much more than during the rest of the course since more people were invlolved and higher discipline was needed. I haven't really used static variables before so that is also something I'm taking with me.
 
 
-Sebastian Lhådö
+### Sebastian Lhådö
 
 Under projektet har Gulhämplingarna haft ett mycket splittrat engagemang till detta projekt! Jag upplever att jag har tagit ansvar för utveckling och optimering, samt strukturering av design dokumentet. Jag har uppskattat att få testa på att ha ett större projekt men som alltid har man haft lite olika engagemang vilket har påverkat processen i gruppen. Jag känner att vi som individer har haft lite olika driv när det kommer till projektet, dock har det funnits godkända skäl för en mindre mängd tid lagd på projektet gentemot sina partners. Exempel som omtentor eller utlandsresor har försvårat vissa tillfällen men många har gjort sitt bästa för att lägga den efterfrågade tiden.
 
@@ -50,7 +50,7 @@ De största problemen som vi stött på i vår grupp är att vi ej setts tillrä
 Det positiva som jag upplevt under projektets gång är garanterat att vi valt att köra parprogrammering mot hela projektet! Då jag har kommit bra överens med min programmerings partner och vi båda har engagerat oss för att verkligen skriva bra och väldokumenterad kod. Par programmeringen har inte bara varit positiv det har gjort att vi som grupp fått lov att skriva deviations mot issue logs i github. Detta för att vi tagit allt med vår respektive programmerings partner.
 
 
-Odd Jensen
+### Odd Jensen
 
 **How do I function in a team**  
 I tend to be quite passive in a team, especially if I feel like I am not the one with most experience.

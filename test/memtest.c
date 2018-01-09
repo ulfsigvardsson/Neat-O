@@ -44,14 +44,14 @@ test_list ()
     first->next = NULL;
     list->first = list->last = first;
     retain (first);
-    
+
     assert(rc(first) == 1);
 
     list->first->data = allocate_string ("Test");
 
     link_t *current = first;
 
-    for (size_t i = 0; i < 10000; i++)
+    for (size_t i = 0; i < 10000000; i++)
         {
             link_t *link = allocate (sizeof (link_t), link_destructor);
             retain (link);
@@ -95,7 +95,7 @@ main (int argc, char *argv[])
         }
 
   release (arr);
-  
+
   cleanup ();
   shutdown ();
   return 0;

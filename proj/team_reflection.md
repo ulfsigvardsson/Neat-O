@@ -14,7 +14,7 @@
 The project started on 06/12-17 and it ended on 09/01-18. Since we used Kanban we decided that we would not use sprints but would rather work on something until it ended so either we had 0 sprints or 1 sprint depending on how you view it.
 Our main scripts with the code for the garbage collector has 641 lines of code.
 Our tests (both unit and integration) has 340 lines of code and our makefiles has 31 lines.
-We have 123 commits and we have spent 161+ hours working on this project. We have 5 PR and 0 issues due to us missing to use issues.
+We have 169 commits and we have spent 163+ hours working on this project. We have 5 PR and 0 issues due to us missing to use issues.
 
 
 # 3 Process

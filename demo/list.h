@@ -19,7 +19,7 @@ typedef struct list list_t;
 /// \param compare (may be NULL) used to compare elements in list_contains
 /// \returns: empty list
 list_t *list_new (element_copy_fun copy, element_free_fun free,
-		  element_comp_fun compare);
+                  element_comp_fun compare);
 
 
 /// Inserts a new element at a given index.

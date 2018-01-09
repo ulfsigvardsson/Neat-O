@@ -130,8 +130,11 @@ void allocate_string_test(void)
  */
 void deallocate_test(void)
 {
-  //The test for deallocate not really deemed possible to test!
-  printf("Not a possible test!...Technically ");
+  int *test = allocate(sizeof(int), NULL); 
+  object_record_t *record = OBJECT_TO_RECORD(test);
+  deallocate(test);
+  link_t **null_pointer = find_link(garbage, record);
+  CU_ASSERT_FALSE(*null_pointer); 
 }
 
 /**
@@ -164,12 +167,8 @@ void get_cascade_limit_test(void)
  */
 void cleanup_test(void)
 {
-  obj tmp1 = allocate((size_t) 32, NULL);
   obj tmp2 = allocate((size_t) 32, NULL);
-  obj tmp3 = allocate((size_t) 32, NULL);
-  object_record_t *test1 = OBJECT_TO_RECORD(tmp1);
-  object_record_t *test2 = OBJECT_TO_RECORD(tmp2);
-  object_record_t *test3 = OBJECT_TO_RECORD(tmp3);
+
   retain(tmp2);
   cleanup();
   CU_ASSERT_TRUE(garbage->size == 0 && rc(tmp2) == 1);

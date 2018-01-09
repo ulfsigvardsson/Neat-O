@@ -30,7 +30,7 @@ run : lager
 	./lager db.txt
 
 valgrind: lager
-	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./lager db.txt
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./lager db.txt < input.txt
  
 clean:
 	rm -f *.o

@@ -19,7 +19,7 @@ typedef struct node node_t;
 /// @param compare (may be NULL) used to compare keys
 /// \returns: empty tree
 tree_t *tree_new (element_copy_fun element_copy, key_free_fun key_free,
-		  element_free_fun elem_free, element_comp_fun compare);
+                  element_free_fun elem_free, element_comp_fun compare);
 
 /// Remove a tree along with all elem_t elements.
 ///
@@ -128,7 +128,7 @@ enum tree_order
 /// \param data an extra argument passed to each call to fun (may be NULL)
 /// \returns the result of all fun calls, combined with OR (||)
 bool tree_apply (tree_t * tree, enum tree_order order, key_elem_apply_fun fun,
-		 void *data);
+                 void *data);
 
 
 /// Returns the void pointer of the root element

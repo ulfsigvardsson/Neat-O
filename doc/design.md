@@ -41,10 +41,10 @@ Boolean value in order to allow cleanup to ignore the cascade_limit and free eve
  typedef unsigned short rc_format;
  typedef unsigned short size_format;
 ```
-__function1_t__ is the way we define pointers to functions and in our case it's used for destructors.  
+__function1_t__ is the way we define pointers to functions and in our case it's used for destructors.
 __rc_format__ is the format of which we keep track of all references to a specific object.
-This format is the same as saying Unsigned Int however it's easier to read the code when given a typedef.  
-__size_format__ is the format of which we keep track of the amount of bytes. The format is the same as saying Unsigned Int however the readability of our code increases with this typedef.  
+This format is the same as saying Unsigned Int however it's easier to read the code when given a typedef.
+__size_format__ is the format of which we keep track of the amount of bytes. The format is the same as saying Unsigned Int however the readability of our code increases with this typedef.
 
 ## Object_record <a name="obj-rec"></a>
 Our object_record holds the valuble information needed for our program to function correctly.
@@ -74,7 +74,7 @@ Beware that our reference count can reach it's upper limit or lower limit and ca
 ## Allocate <a name = "allocate-exp"></a>
 Allocate are in charge of allocating a specific size of bytes on our heap.
 
-The allocation process starts by initializing a garbage list if there currently is none. If there already is one allocated with a size larger than 0 meaning we have some pointers to objects whoms reference count is zero, we are deallocating these objects before continuing with our current allocation.
+The allocation process starts by initializing a garbage list if there currently is none. If there already is one allocated with a size larger than zero meaning we have some pointers to objects whoms reference count is zero, we are deallocating these objects before continuing with our current allocation.
 
 Later the initialization of our destructors are done and lastly the record is initialized.
 
@@ -89,9 +89,10 @@ Deallocation is the process of telling the system our program no longer need thi
 Since the deallocation is done to garbage it redirects the garbage_pointers and later on gets the objects destructor function and destroys the object using the destructor given during the allocation.
 
 ## Set_cascade_limit <a name = "set_casc-exp"></a>
-Setting the cascade limit is done by the client in order to optimize the effectivness of our memory handling. Cascade limit is initilized at the value of XXX
+Setting the cascade limit is done by the client in order to optimize the effectivness of our memory handling. Cascade limit is initilized at the value of XXX as default because of XX
 
 ## Get_cascade_limit <a name = "get_casc-exp"></a>
+self explanatory.
 
 ## Cleanup <a name = "cleanup-exp"></a>
 

@@ -1,4 +1,4 @@
-# Individual Reflection
+# Odd's Individual Reflection
 
 ### How do I function in a team
 I tend to be quite passive in a team, especially if I feel like I am not the one with most experience.

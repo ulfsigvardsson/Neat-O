@@ -6,7 +6,6 @@ References to object are managed by the programmer by calls to `retain()`and `re
 
 After allocating an object it must therefore first be *explicitly* retained, else it will be treated as a stack variable and possibly lost when popping the current stack frame.
 
----
 
 ## Functionality
 
@@ -51,7 +50,6 @@ Frees all objects who's reference count is 0, regardless of the cascade limit.
 
 ## Example Use
 
----
 
 ```C
 #include "refmem.h"

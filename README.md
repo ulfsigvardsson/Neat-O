@@ -51,6 +51,8 @@ Frees all objects who's reference count is 0, regardless of the cascade limit.
 
 ## Example Use
 
+---
+
 ```C
 #include "refmem.h"
 

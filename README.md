@@ -51,7 +51,7 @@ Frees all objects who's reference count is 0, regardless of the cascade limit.
 
 ## Example Use
 
-```
+```C
 #include "refmem.h"
 
 list_t *list = allocate (sizeof (list_t), list_destructor);
@@ -64,7 +64,7 @@ retain (list);
 
 Here, a list is allocated with its destructor passed as an argument. Next an object of type `link_t` is allocated on the heap with its own destructor. This link can now be used within the object `list`. Before the function returns, both objects are retained. A destructor function for `link_t` could look something like this:
 
-```
+```C
 void
 link_destructor (obj o)
 {

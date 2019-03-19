@@ -72,4 +72,4 @@ link_destructor (obj o)
 }
 ```
 
-``
+Note that pointer to the next object is not deallocated but merely released. Any deallocation will be dependent on the reference count to that object.

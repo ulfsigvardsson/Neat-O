@@ -1,4 +1,4 @@
-# Lumos, A Reference Counting Garbage Collector for the C Programming Language
+# Neat-O, A Reference Counting Garbage Collector for the C Programming Language
 
 This is a simple semi-automatic garbage collector for C. Instead of using `malloc()`or `calloc()`, memory is allocated on the heap with `allocate()` and `allocate_array()` respectively. The equivalent function to `strdup()`is `allocate_string()`.
 

@@ -52,6 +52,8 @@ Frees all objects who's reference count is 0, regardless of the cascade limit.
 ## Example Use
 
 ```
+#include "refmem.h"
+
 list_t *list = allocate (sizeof (list_t), list_destructor);
 link_t *first = allocate (sizeof (link_t), link_destructor);
 first->next = NULL;
